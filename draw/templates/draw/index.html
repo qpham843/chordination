@@ -15,22 +15,90 @@
 
 </head>
 <body>
-    <!-- You may change the dimensions of this canvas -->
-    <canvas id="myCanvas" width="750px" height="750px"></canvas>
+  <!-- You may change the dimensions of this canvas -->
+  <div id="theurl" style="font-size: 24px">
+    
+  </div>
+  <canvas id="myCanvas" width="750px" height="750px"></canvas>
+  <div id="accel" style="font-size: 24px">
+    
+  </div>
+  <div id="gamma" style="font-size: 24px">
+    
+  </div>
 </body>
 <script>
+  // setting up the canvas and one paper tool
+  var myUrl = window.location.href;
+  document.getElementById('theurl').innerHTML = myUrl;
+  var canvas = document.getElementById('myCanvas');
+  paper.setup(canvas);
+  var socket = new WebSocket('wss://p3-websockets-qpham843-qpham843667163.codeanyapp.com/ws/draw');
+  // Create a simple drawing tool:
+  var tool = new paper.Tool();
+  var path = new paper.Path();
+  var colors = ["black", "red", "blue", "green","lawngreen","purple","chartreuse", "cyan", "darkorange"];
+  var color = colors[Math.floor(Math.random() * 9)];
+  
+  path.strokeColor = color;
+  path.strokeWidth = 3;
 
-    // setting up the canvas and one paper tool
-    var canvas = document.getElementById('myCanvas');
-    paper.setup(canvas);
-    var tool = new paper.Tool();
+  // Define a mousedown and mousedrag handler
+  tool.onMouseDown = function(event) {
+    path = new paper.Path();
+    path.strokeWidth = 3;
+    path.strokeColor = color;
+    socket.send([1, event.point.x, event.point.y, color]);
+  }
+    
+  tool.onMouseDrag = function(event) {
+    path.add(event.point);
+    socket.send([0, event.point.x, event.point.y, color]);
+  }
+    
+  socket.onmessage = function(receivedMessage) {
+    var mess = receivedMessage.data.split(',');
+    console.log();
+    if (window.location.href == "https://p3-websockets-qpham843-qpham843667163.codeanyapp.com/draw/?size=large") {
+      if (mess[0] == 1) {
+        path = new paper.Path();
+        path.strokeWidth = 3;
+        path.strokeColor = mess[3];
+      }
+      var point = new paper.Point(0, 0);
+      point.x = parseInt(mess[1]);
+      point.y = parseInt(mess[2]);
+      path.add(point);
+    }
+  }
+  
+  function clearCanvas() {
+    paper.project.clear();
+  }
+  
+  function changeColor() {
+    var newcolor = colors[Math.floor(Math.random() * 9)];
+    color = newcolor;
+  }
+  
+  window.addEventListener('devicemotion', (event)=> {
+    if (Math.abs(event.acceleration.x)>10 || Math.abs(event.acceleration.y)>10 || Math.abs(event.acceleration.z)>10){
+      clearCanvas();
+    }
+    document.getElementById('accel').innerHTML = "X Accel: " + parseInt(event.acceleration.x) + "\nY Accel: " + parseInt(event.acceleration.y) + "\nZ Accel: " + parseInt(event.acceleration.z);
+  });
+  window.addEventListener('deviceorientation', (event)=> {
+    if (Math.abs(event.gamma) > 30) {
+      changeColor();
+    }
+    document.getElementById('gamma').innerHTML = "Gamma: " + parseInt(event.gamma);
+  });
 
-    // getting the URL (you may want to use for Exercise 3)
-    var url = window.location.href;
-
-    // var socket = new WebSocket(
-    //     'wss://<your url here>/ws/draw');
-
+  // getting the URL (you may want to use for Exercise 3)
+  var url = window.location.href;
+  // var socket = new WebSocket(
+  //     'wss://<your url here>/ws/draw');
+  // triggered when receiving a message from the server
 
 </script>
 </html>
