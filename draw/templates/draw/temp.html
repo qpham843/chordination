@@ -1,0 +1,218 @@
+{% load static %}
+
+<!DOCTYPE html>
+<html>
+<head>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+    <title>P4 Drawing</title>
+
+    <link rel="stylesheet" type="text/css" href="{% static 'draw/vendor/bootstrap/css/bootstrap.min.css' %}">
+    <script type="text/javascript" src="{% static 'draw/vendor/jquery/jquery-3.3.1.min.js' %}"></script>
+    <script type="text/javascript" src="{% static 'draw/vendor/paper/paper-full.min.js' %}"></script>
+
+    <style type="text/css">
+    </style>
+  </head>
+  <body>
+    <div id="theurl" style="font-size: 24px"></div>
+    <div id="motherbox" class="container">
+      <h2 id="appTitle"> Household Democracy </h2>
+      <div id="createBox" class="bigbox" onclick="createBox()">Click to add box. </div>
+    </div>
+  </body>
+<script>
+var myUrl=window.location.href;
+document.getElementById('theurl').innerHTML=myUrl;
+if (myUrl == "https://p3-websockets-qpham843-qpham843667163.codeanyapp.com/draw/temp/?size=small") {
+  /*document.getElementById('createBox').classList.remove("bigbox");
+  document.getElementById('createBox').classList.add("smallbox");*/
+  $("#createBox").remove();
+} else if (myUrl == "https://p3-websockets-qpham843-qpham843667163.codeanyapp.com/draw/temp/?size=medium") {
+  document.getElementById('createBox').classList.remove("bigbox");
+  document.getElementById('createBox').classList.add("mediumbox");
+}
+var socket = new WebSocket('wss://p3-websockets-qpham843-qpham843667163.codeanyapp.com/ws/draw');
+function createBox() {
+  var formTitle = prompt("Create New Topic", "Title");
+  if (formTitle != null || formTitle != "") {
+    var obj = {id: 0, title: formTitle, suggestion: "", vote: 0};
+    var jsonstr = JSON.stringify(obj);
+    socket.send(jsonstr);
+  }
+}
+socket.onmessage = function(receivedMessage) {
+  var data = receivedMessage.data;
+  var obj = JSON.parse(data);
+  var id = obj.id;
+  var title = obj.title;
+  var suggestion = obj.suggestion;
+  var vote = obj.vote;
+  if (id == 0) {
+    if (myUrl == "https://p3-websockets-qpham843-qpham843667163.codeanyapp.com/draw/temp/?size=small") {
+      document.getElementById('motherbox').innerHTML += "<div class='smallbox'><p>" + title + "</p></div>";
+    } else if (myUrl == "https://p3-websockets-qpham843-qpham843667163.codeanyapp.com/draw/temp/?size=medium") {
+      document.getElementById('motherbox').innerHTML += "<div class='mediumbox'><p>" + title + "</p></div>";
+    } else {
+      document.getElementById('motherbox').innerHTML += "<div class='bigbox'><p>" + title + "</p></div>";
+    }
+  }
+}
+
+$(document).on("click", ".bigbox", function(event) {
+  if ($(this).not("#createBox").data('active') != true) {
+    if (event.target != this) {
+      return;
+    }
+    $(this).not("#createBox").parent().css("overflow", "none");
+    $(this).not("#createBox").css("margin-top", "9%");
+    $(this).not("#createBox").css("height", "91%");
+    $(this).not("#createBox").css("width", "95.5%");
+    $(this).not("#createBox").css("z-index", "1");
+    $(this).not("#createBox").css("position", "absolute");
+    $(this).not("#createBox").data('active', true);
+  } else {
+    $(this).not("#createBox").parent().css("overflow", "scroll");
+    $(this).not("#createBox").css("margin-top", "5px");
+    $(this).not("#createBox").css("height", "30%");
+    $(this).not("#createBox").css("width", "100%");
+    $(this).not("#createBox").css("z-index", "0");
+    $(this).not("#createBox").css("position", "relative");
+    $(this).not("#createBox").data('active', false);
+  }
+});
+  
+$(document).on("click", ".mediumbox", function(event) {
+  if (event.target != this) {
+    return;
+  }
+  if ($(this).not("#createBox").data('active') != true) {
+    $(this).not("#createBox").parent().css("overflow", "none");
+    $(this).not("#createBox").css("margin-top", "9%");
+    $(this).not("#createBox").css("height", "91%");
+    $(this).not("#createBox").css("width", "95.5%");
+    $(this).not("#createBox").css("z-index", "1");
+    $(this).not("#createBox").css("position", "absolute");
+    $(this).not("#createBox").data('active', true);
+  } else {
+    $(this).not("#createBox").parent().css("overflow", "scroll");
+    $(this).not("#createBox").css("margin-top", "5px");
+    $(this).not("#createBox").css("height", "30%");
+    $(this).not("#createBox").css("width", "48%");
+    $(this).not("#createBox").css("z-index", "0");
+    $(this).not("#createBox").css("position", "relative");
+    $(this).not("#createBox").data('active', false);
+  }
+});
+  
+$(document).on("click", ".smallbox", function(event) {
+  if (event.target != this) {
+    return;
+  }
+  if ($(this).not("#createBox").data('active') != true) {
+    $(this).not("#createBox").parent().css("overflow", "none");
+    $(this).not("#createBox").css("margin-top", "9%");
+    $(this).not("#createBox").css("height", "91%");
+    $(this).not("#createBox").css("width", "95.5%");
+    $(this).not("#createBox").css("z-index", "1");
+    $(this).not("#createBox").css("position", "absolute");
+    $(this).not("#createBox").data('active', true);
+  } else {
+    $(this).not("#createBox").parent().css("overflow", "scroll");
+    $(this).not("#createBox").css("margin-top", "5px");
+    $(this).not("#createBox").css("height", "30%");
+    $(this).not("#createBox").css("width", "31%");
+    $(this).not("#createBox").css("z-index", "0");
+    $(this).not("#createBox").css("position", "relative");
+    $(this).not("#createBox").data('active', false);
+  }
+});
+</script>
+  
+<style>
+  #appTitle {
+    text-align: center;
+    width: 100%;
+    height: 6%;
+    padding-top: 0.5%;
+    background-color: gold;
+  }
+  
+  #createBox {
+    background-color: white;
+    border-style: dashed;
+  }
+.smallbox {
+  position: relative;
+  background-color: rgb(144,144,144);
+  font-size: 24px;
+  border-style: solid;
+  width: 31%;
+  height: 30%;
+  text-align: center;
+  align-content: center;
+  margin-right: 10px;
+  margin-top: 5px;
+  padding-top: 13%;
+  transition: width 0.4s, height 0.4s;
+}
+  
+  .smallbox:hover,
+  .smallbox:focus {
+    background-color: gray;
+    border-width: 5px;
+  }
+  
+.bigbox {
+  position: relative;
+  background-color: rgb(144,144,144);
+  font-size: 24px;
+  border-style: solid;
+  width: 100%;
+  height: 30%;
+  text-align: center;
+  align-content: center;
+  margin-right: 10px;
+  margin-top: 5px;
+  padding-top: 13%;
+  transition: width 0.4s, height 0.4s;
+}
+
+.bigbox:hover,
+.bigbox:focus {
+  background-color: gray;
+  border-width: 5px;
+}
+  
+.mediumbox {
+  position: relative;
+  background-color: rgb(144,144,144);
+  font-size: 24px;
+  border-style: solid;
+  width: 48%;
+  height: 30%;
+  text-align: center;
+  align-content: center;
+  margin-right: 10px;
+  margin-top: 5px;
+  padding-top: 13%;
+  transition: width 0.4s, height 0.4s;
+}
+
+.mediumbox:hover,
+.mediumbox:focus {
+  background-color: gray;
+  border-width: 5px;
+}
+
+#motherbox {
+  position: relative;
+  border-style: solid;
+  display: flex;
+  flex-direction: row;
+  flex-wrap: wrap;
+  width: 675px;
+  height: 800px;
+  align-content: flex-start;
+  overflow: scroll;
+}
+</style></html>
