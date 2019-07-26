@@ -14,28 +14,38 @@
     </style>
   </head>
   <body>
-    <div id="theurl" style="font-size: 24px"></div>
+    <div id="theurl" style="font-size: 36px; text-align: center;"></div>
     <div id="motherbox" class="container">
       <h2 id="appTitle"> Household Democracy </h2>
-      <div id="createBox" class="bigbox" onclick="createBox()">Click to add box. </div>
+      <div id="createBox" class="bigbox" onclick="createBox()"><p>Click to add box.</p></div>
     </div>
   </body>
 <script>
 var myUrl=window.location.href;
-document.getElementById('theurl').innerHTML=myUrl;
+document.getElementById('theurl').innerHTML= "SMALL DISPLAY: VARIANT 1";
 if (myUrl == "https://p3-websockets-qpham843-qpham843667163.codeanyapp.com/draw/temp/?size=small") {
   /*document.getElementById('createBox').classList.remove("bigbox");
   document.getElementById('createBox').classList.add("smallbox");*/
   $("#createBox").remove();
+  document.getElementById('theurl').innerHTML = "LARGE DISPLAY"
 } else if (myUrl == "https://p3-websockets-qpham843-qpham843667163.codeanyapp.com/draw/temp/?size=medium") {
   document.getElementById('createBox').classList.remove("bigbox");
   document.getElementById('createBox').classList.add("mediumbox");
+  document.getElementById('theurl').innerHTML= "SMALL DISPLAY: VARIANT 2";
 }
 var socket = new WebSocket('wss://p3-websockets-qpham843-qpham843667163.codeanyapp.com/ws/draw');
 function createBox() {
   var formTitle = prompt("Create New Topic", "Title");
   if (formTitle != null || formTitle != "") {
     var obj = {id: 0, title: formTitle, suggestion: "", vote: 0};
+    var jsonstr = JSON.stringify(obj);
+    socket.send(jsonstr);
+  }
+}
+function createSuggestion(thisobj) {
+  var formSuggestion = prompt("Add New Suggestion", "Suggestion");
+  if (formSuggestion != null || formSuggestion != "") {
+    var obj = {id: 1, title: $(thisobj).parent().name, suggestion: formSuggestion, vote: 0};
     var jsonstr = JSON.stringify(obj);
     socket.send(jsonstr);
   }
@@ -54,6 +64,14 @@ socket.onmessage = function(receivedMessage) {
       document.getElementById('motherbox').innerHTML += "<div class='mediumbox'><p>" + title + "</p></div>";
     } else {
       document.getElementById('motherbox').innerHTML += "<div class='bigbox'><p>" + title + "</p></div>";
+    }
+  } else if (id == 1) {
+    if (myUrl == "https://p3-websockets-qpham843-qpham843667163.codeanyapp.com/draw/temp/?size=small") {
+      $('[name="' + title + '"]').innerHTML += "<div class='smallsuggestion'>" + suggestion + "</div>";
+    } else if (myUrl == "https://p3-websockets-qpham843-qpham843667163.codeanyapp.com/draw/temp/?size=medium") {
+      $('[name="' + title + '"]').innerHTML += "<div class='mediumsuggestion'>" + suggestion + "</div>";
+    } else {
+      $('[name="' + title + '"]').innerHTML += "<div class='bigsuggestion'>" + suggestion + "</div>";
     }
   }
 }
@@ -142,6 +160,7 @@ $(document).on("click", ".smallbox", function(event) {
     border-style: dashed;
   }
 .smallbox {
+  display: flex;
   position: relative;
   background-color: rgb(144,144,144);
   font-size: 24px;
@@ -152,7 +171,6 @@ $(document).on("click", ".smallbox", function(event) {
   align-content: center;
   margin-right: 10px;
   margin-top: 5px;
-  padding-top: 13%;
   transition: width 0.4s, height 0.4s;
 }
   
@@ -163,6 +181,7 @@ $(document).on("click", ".smallbox", function(event) {
   }
   
 .bigbox {
+  display: flex;
   position: relative;
   background-color: rgb(144,144,144);
   font-size: 24px;
@@ -173,7 +192,6 @@ $(document).on("click", ".smallbox", function(event) {
   align-content: center;
   margin-right: 10px;
   margin-top: 5px;
-  padding-top: 13%;
   transition: width 0.4s, height 0.4s;
 }
 
@@ -184,6 +202,7 @@ $(document).on("click", ".smallbox", function(event) {
 }
   
 .mediumbox {
+  display: flex;
   position: relative;
   background-color: rgb(144,144,144);
   font-size: 24px;
@@ -194,7 +213,6 @@ $(document).on("click", ".smallbox", function(event) {
   align-content: center;
   margin-right: 10px;
   margin-top: 5px;
-  padding-top: 13%;
   transition: width 0.4s, height 0.4s;
 }
 
@@ -215,4 +233,8 @@ $(document).on("click", ".smallbox", function(event) {
   align-content: flex-start;
   overflow: scroll;
 }
+
+  p {
+    margin: auto;
+  }
 </style></html>
