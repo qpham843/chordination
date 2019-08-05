@@ -36,7 +36,7 @@ if (myUrl == "https://p3-websockets-qpham843-qpham843667163.codeanyapp.com/draw/
 var socket = new WebSocket('wss://p3-websockets-qpham843-qpham843667163.codeanyapp.com/ws/draw');
 function createBox() {
   var formTitle = prompt("Create New Topic", "Title");
-  if (formTitle != null || formTitle != "") {
+  if (formTitle) {
     var obj = {id: 0, title: formTitle, suggestion: "", vote: 0};
     var jsonstr = JSON.stringify(obj);
     socket.send(jsonstr);
@@ -44,7 +44,7 @@ function createBox() {
 }
 function createSuggestion(thisobj) {
   var formSuggestion = prompt("Add New Suggestion", "Suggestion");
-  if (formSuggestion != null || formSuggestion != "") {
+  if (formSuggestion) {
     var obj = {id: 1, title: $(thisobj).parent().name, suggestion: formSuggestion, vote: 0};
     var jsonstr = JSON.stringify(obj);
     socket.send(jsonstr);
@@ -67,11 +67,11 @@ socket.onmessage = function(receivedMessage) {
     }
   } else if (id == 1) {
     if (myUrl == "https://p3-websockets-qpham843-qpham843667163.codeanyapp.com/draw/temp/?size=small") {
-      $('[name="' + title + '"]').innerHTML += "<div class='smallsuggestion'>" + suggestion + "</div>";
+      $('[name="' + title + '"]').innerHTML += "<div class='suggestion'>" + suggestion + "</div>";
     } else if (myUrl == "https://p3-websockets-qpham843-qpham843667163.codeanyapp.com/draw/temp/?size=medium") {
-      $('[name="' + title + '"]').innerHTML += "<div class='mediumsuggestion'>" + suggestion + "</div>";
+      $('[name="' + title + '"]').innerHTML += "<div class='suggestion'>" + suggestion + "</div>";
     } else {
-      $('[name="' + title + '"]').innerHTML += "<div class='bigsuggestion'>" + suggestion + "</div>";
+      $('[name="' + title + '"]').innerHTML += "<div class='suggestion'>" + suggestion + "</div>";
     }
   }
 }
@@ -221,6 +221,27 @@ $(document).on("click", ".smallbox", function(event) {
   background-color: gray;
   border-width: 5px;
 }
+
+.suggestion {
+  display: flex;
+  position: relative;
+  background-color: rgb(144,144,144);
+  font-size: 24px;
+  border-style: solid;
+  width: 31%;
+  height: 30%;
+  text-align: center;
+  align-content: center;
+  margin-right: 10px;
+  margin-top: 5px;
+  transition: width 0.4s, height 0.4s;
+}
+  
+  .suggestion:hover,
+  .suggestion:focus {
+    background-color: gray;
+    border-width: 5px;
+  }
 
 #motherbox {
   position: relative;

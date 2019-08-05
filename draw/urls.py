@@ -7,5 +7,7 @@ from . import views
 urlpatterns = [
     url(r'^$', views.index, name='index'),
     path('temp/', views.temp, name='temp'),
+    path('formation/', views.formation, name='formation'),
+    path('menu/', views.menu, name='menu')
 ]
 

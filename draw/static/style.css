@@ -1,0 +1,13 @@
+#canvases {
+  border-style: solid;
+  margin: 5px;
+}
+
+#formationOptions {
+  font-size: 24px;
+}
+
+canvas {
+  width: 100%;
+  height: 800px;
+}

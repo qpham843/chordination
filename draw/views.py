@@ -8,3 +8,8 @@ def index(request):
 def temp(request):
 	return render(request, "draw/temp.html")
   
+def formation(request):
+  return render(request, "draw/formation.html")
+
+def menu(request):
+  return render(request, "draw/menu.html")
