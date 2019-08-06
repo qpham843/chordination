@@ -8,6 +8,7 @@ urlpatterns = [
     url(r'^$', views.index, name='index'),
     path('temp/', views.temp, name='temp'),
     path('formation/', views.formation, name='formation'),
-    path('menu/', views.menu, name='menu')
+    path('menu/', views.menu, name='menu'),
+    path('roster/', views.roster, name='roster')
 ]
 

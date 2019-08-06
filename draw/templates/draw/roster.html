@@ -10,37 +10,91 @@
     <script type="text/javascript" src="{% static 'draw/vendor/jquery/jquery-3.3.1.min.js' %}"></script>
     <script type="text/javascript" src="{% static 'draw/vendor/paper/paper-full.min.js' %}"></script>
     <style type="text/css">
-      .name-item {
-        
+      body {
+        background-image: url('/static/draw/images/rosterbackground.jpg');
       }
-  
-  </style>
-  
-  </head>
-  
-  <body>
-    
-    <div id="roster">
-      
-    </div>
-    
-    <form>
-      <input type="text" id="input_name"><br>
-      <input type="submit" value="Add!">
-    </form>
-   
-  </body>
+      form {
+        text-align: center;
+      }
+      h1 {
+        text-align: center;
+        font-family: 'Optima';
+      }
+      button {
+        margin-top: 10px;
+        font-family: 'Optima';
+        border-radius: 10px;
+        font-size: 20px;
+        background-color: black;
+        color: white;
+        border-color: black;
+      }
+      #roster-container{
+        text-align: center;
+      }
+      #roster {
+        display: inline-block;
+        text-align: left;
+        font-family: Optima;
+        margin-bottom: 10px;
+        font-size: 20px;
+      }
+      #menu {
+        margin-left: 10px;
+      }
+    </style>
 
-  <script>
-    
-    var name = document.getElementById("input_name").value;
-    
-    function displayInput() {
+    </head>
+
+    <body>
+      <button id = "menu" type = "button">
+        Main Menu
+      </button>
+      <h1>
+        Current Roster
+      </h1>
       
-      var $newDiv = $("<div/").addClass("name-item").html("<div>" + name + "</div");
+      <div id="roster-container">
+        
       
-    }
-  
-  </script>
+        <div id="roster">
+
+        </div>
+        
+      </div>
+      
+      <form>
+        <input type="text" id="input_name" onfocus="this.value=''"><br>
+        <button type="button" id="submit">
+          Add Member
+        </button>
+      </form>
+
+    </body>
+
+    <script>
+      $(document).ready(function() {
+        document.getElementById("menu").onclick = function () {
+          location.href = "http://p3-websockets-qpham843-qpham843667163.codeanyapp.com/draw/menu/";
+        };  
+        var socket = new WebSocket('wss://p3-websockets-qpham843-qpham843667163.codeanyapp.com/ws/draw');
+        var members = [];
+        
+        $("#submit").click(function() {
+          var member = {
+            number: members.length + 1,
+            name: document.getElementById("input_name").value
+          };
+          members.push(member);
+          socket.send(JSON.stringify(member));
+        });
+
+        socket.onmessage = function(e) {
+          var msg = JSON.parse(e.data);
+          var roster = document.getElementById("roster");
+          roster.innerHTML = roster.innerHTML + msg.number + ". " + msg.name + "<br>";
+        };
+      });
+    </script>
   
 </html>

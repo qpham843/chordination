@@ -5,22 +5,74 @@
 <head>
     <meta http-equiv="Content-Type" content="text/html; charset=utf-8">
     <title>Chordination-formations</title>
-
     <link rel="stylesheet" type="text/css" href="{% static 'draw/vendor/bootstrap/css/bootstrap.min.css' %}">
     <link rel="stylesheet" type="text/css" href="{% static 'style.css' %}">
     <script type="text/javascript" src="{% static 'draw/vendor/jquery/jquery-3.3.1.min.js' %}"></script>
     <script type="text/javascript" src="{% static 'draw/vendor/bootstrap/js/bootstrap.min.js' %}"></script>
     <script type="text/javascript" src="{% static 'draw/vendor/paper/paper-full.min.js' %}"></script>
     <script type="text/javascript" src="{% static 'formation.js' %}"> </script>
-
+    <style>
+      body {
+        background-image: url('/static/draw/images/pastel.png');
+        font-family: 'Optima';
+        text-align: center;
+      }
+      button {
+        margin-top: 10px;
+        font-family: 'Optima';
+        border-radius: 10px;
+        font-size: 20px;
+        background-color: black;
+        color: white;
+        border-color: black;
+      } 
+      #gridStep {
+        margin-top: 10px;
+      } 
+      h3{
+        font-weight: bold;
+        font-size: 30px;
+      }
+      #formationOptions {
+        margin-top: 50px;
+      }  
+      #infoSection {
+        margin-top: 50px;
+      }
+      #roster {
+        margin-top: 20px;
+      }
+    </style>
 </head>
 <body>
+  <button id = "menu" type = "button">
+    Main Menu
+  </button>
   <div id="canvases">
     <canvas id="myCanvas"></canvas>
-  </div>
+  </div>  
+  <!--<div id="roster">
+    <h3>
+      Roster
+    </h3>
+    <div id="members">
+      
+    </div>
+  </div> -->
   <div id="formationOptions"> 
-    Switch <input type="checkbox" id="switchCheckBox">
+    <h3>
+      Formation Options
+    </h3>
+    Toggle Switch <input type="checkbox" id="switchCheckBox"><br>
+    Toggle Group Move <input type="checkbox" id="groupCheckBox"><br>
     Grid Step <input type="number" id="gridStep" value="1" min="1">
+  </div>  
+  <div id="infoSection"> 
+     <h3>
+       Dancer Information
+    </h3>
+     <p id="Name">Name:</p>
+     <p id="Number">Number:</p>
   </div>
 
 

@@ -2,56 +2,64 @@
 
 <!DOCTYPE html>
 <html>
-<head>
-    <meta http-equiv="Content-Type" content="text/html; charset=utf-8">
-    <title>P4 Drawing</title>
+  <head>
+      <meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+      <title>P4 Drawing</title>
 
-    <link rel="stylesheet" type="text/css" href="{% static 'draw/vendor/bootstrap/css/bootstrap.min.css' %}">
-    <script type="text/javascript" src="{% static 'draw/vendor/jquery/jquery-3.3.1.min.js' %}"></script>
-    <script type="text/javascript" src="{% static 'draw/vendor/paper/paper-full.min.js' %}"></script>
+      <link rel="stylesheet" type="text/css" href="{% static 'draw/vendor/bootstrap/css/bootstrap.min.css' %}">
+      <script type="text/javascript" src="{% static 'draw/vendor/jquery/jquery-3.3.1.min.js' %}"></script>
+      <script type="text/javascript" src="{% static 'draw/vendor/paper/paper-full.min.js' %}"></script>
 
-    <style type="text/css">
-      body {
-        background-image: linear-gradient(mediumvioletred, gold, royalblue);
-      }
-      h1 {
-        text-align: center;
-        font-weight: bold;
-        font-family: 'Trattatello';
-        font-size: 75px;
-        margin-top: 50px;
-        margin-bottom: 50px;
-        color: black;
-      }
-      img {
-        text-align: center;
-        display: block;
-        width: 44%;
-        height: 44%;
-        margin: auto;
-      }
-      button {
-        margin: 20px auto;
-        display: block;
-        font-family: 'Optima';
-        border-radius: 10px;
-        font-size: 20px;
-        background-color: black;
-        color: white;
-        border-color: black;
-      }
-    </style>
-</head>
-<body>
-  <h1>
-    Chordination
-  </h1>
-  <img src = "https://i.pinimg.com/originals/30/45/9c/30459c328f5f535509d3131f773ab10f.jpg"></a>
-  <button type = "button">
-    Manage Roster
-  </button>
-  <button type = "button">
-    Create Formation
-  </button>
-</body>
+      <style type="text/css">
+        body {
+          background-image: linear-gradient(mediumvioletred, gold, royalblue);
+        }
+        h1 {
+          text-align: center;
+          font-weight: bold;
+          font-family: 'Trattatello';
+          font-size: 75px;
+          margin-top: 50px;
+          margin-bottom: 50px;
+          color: black;
+        }
+        img {
+          text-align: center;
+          display: block;
+          width: 44%;
+          height: 44%;
+          margin: auto;
+        }
+        button {
+          margin: 20px auto;
+          display: block;
+          font-family: 'Optima';
+          border-radius: 10px;
+          font-size: 20px;
+          background-color: black;
+          color: white;
+          border-color: black;
+        }
+      </style>
+  </head>
+  <body>
+    <h1>
+      Chordination
+    </h1>
+    <img src = "/static/draw/images/dance.jpg"></a>
+    <button id = "roster" type = "button">
+      Manage Roster
+    </button>
+    <button id = "formation" type = "button">
+      Create Formation
+    </button>
+  </body>
+  <script>
+    document.getElementById("roster").onclick = function () {
+       location.href = "http://p3-websockets-qpham843-qpham843667163.codeanyapp.com/draw/roster/";
+    };
+    document.getElementById("formation").onclick = function () {
+       location.href = "http://p3-websockets-qpham843-qpham843667163.codeanyapp.com/draw/formation/";
+    };
+  </script>
 </html>
