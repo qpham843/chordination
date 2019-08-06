@@ -28,36 +28,47 @@ $(document).ready(()=>{
   var circArray = [];
   var circTextArray = [];
   var circToDancer = {};
-  var numDancers = 10;
   
   createDancerList(dancers);
   paper.view.draw();
   
   var selectedCirc = null;
   var selectedCircText = null;
+  var selectedCircs = new Set();
+  
+  var selectedStart = null;
+  var selectionComplete = false;
+  var selectionBox = null;
+  var selection = null;
   
   // MOUSE EVENTS
   
   tool.onMouseDown = function(event) {
-    event.stopPropagation();
     if (!document.getElementById("switchCheckBox").checked) {
       normalMouseDown(event);
+    }
+    if (document.getElementById("groupCheckBox").checked) {
+      selectionMouseDown(event);
     }
   }
   
   tool.onMouseUp = function(event) {
     if (document.getElementById("switchCheckBox").checked) {
       switchMouseUp(event);
-    } else if (selectedCirc) {
+    } else if (document.getElementById("groupCheckBox").checked) {
+      selectionMouseUp(event);
+    }  else if (selectedCirc) {
       deselect();
     }
+    
   }
   
   tool.onMouseDrag = function(event) {
-    event.stopPropagation();
-    if (!document.getElementById("switchCheckBox").checked) {
+    if (!document.getElementById("switchCheckBox").checked && !document.getElementById("groupCheckBox").checked) {
       selectedCirc.position = new paper.Point(gridPoint(event.point));
       selectedCircText.position = new paper.Point(gridPoint(event.point));
+    } else if (document.getElementById("groupCheckBox").checked) {
+      selectionMouseDrag(event);
     }
   }
   
@@ -108,6 +119,33 @@ $(document).ready(()=>{
     }
   }
   
+  function selectionMouseDown(event) {
+    selectionStart = event.point;
+    selectionBox = new paper.Path.Rectangle(event.point, event.point);
+  }
+  
+  function selectionMouseDrag(event) {
+    if (selectionComplete) {
+      var hit = selection.hitTest(event.point, { tolerance: 0, fill: true });
+      if (hit) {
+        selection.position = event.point;
+      }
+    } else {
+      selectionBox.remove();
+      selectionBox = new paper.Path.Rectangle(selectionStart, event.point);
+      selectionBox.strokeColor = "black";
+      selectionBox.dashArray = [4,10];
+    }
+  }
+  
+  function selectionMouseUp(event) {
+    if (selectionComplete) {
+      // Then deselect all and delete group.
+    } else {
+      // Then complete selection and create group.
+    }
+  }
+  
   function switchMouseUp(event) {
     var circIndex = findCirc(event);
     if (selectedCirc) {
@@ -132,6 +170,7 @@ $(document).ready(()=>{
     selectedCirc = circArray[circIndex];
     selectedCirc.selected = true;
     selectedCircText = circTextArray[circIndex];
+    selectedCircs.add(selectedCirc);
     var dancerList = JSON.parse(dancers).dancers;
     var dancer = dancerList[circIndex];
     document.getElementById("Name").innerHTML = "<strong>Name: </strong>" + dancer.name;
@@ -142,6 +181,7 @@ $(document).ready(()=>{
     selectedCirc.selected = false;
     selectedCirc = null;
     selectedCircText = null;
+    selectedCircs = new Set();
     document.getElementById("Name").innerHTML = "Name: ";
     document.getElementById("Number").innerHTML = "Number: ";
   }

@@ -31,14 +31,20 @@
       }
       #roster-container{
         text-align: center;
-        width: 700px;
+        width: 100%;
       }
       #roster {
-        display: inline-block;
-        text-align: left;
         font-family: Optima;
         margin-bottom: 10px;
         font-size: 20px;
+        display: inline-block;
+        text-align: left;
+      }
+      hr {
+        border: 0;
+        height: 0;
+        border-top: 1px solid rgba(0, 0, 0, 0.3);
+        border-bottom: 1px solid rgba(255, 255, 255, 0.3);
       }
       #menu {
         margin-left: 10px;
@@ -56,17 +62,21 @@
       </h1>
       
       <div id="roster-container">
-        
-      
         <div id="roster">
-
+          {% for dancer in dancers %}
+            {{dancer}}
+            <br>
+          {% empty %}
+            No dancers in the roster.
+          {% endfor %}
         </div>
         
       </div>
       
-      <form>
-        <input type="text" id="input_name" onfocus="this.value=''"><br>
-        <button type="button" id="submit">
+      <form action="" method="POST">
+        {% csrf_token %}
+        <input type="text" name = "first_name" id="input_name" onfocus="this.value=''"><br>
+        <button type="submit" id="submit">
           Add Member
         </button>
       </form>
@@ -78,24 +88,25 @@
         document.getElementById("menu").onclick = function () {
           location.href = "http://p3-websockets-qpham843-qpham843667163.codeanyapp.com/draw/menu/";
         };  
-        var socket = new WebSocket('wss://p3-websockets-qpham843-qpham843667163.codeanyapp.com/ws/draw');
-        var members = [];
+//         var socket = new WebSocket('wss://p3-websockets-qpham843-qpham843667163.codeanyapp.com/ws/draw');
+//         var members = [];
         
-        $("#submit").click(function() {
-          var member = {
-            number: members.length + 1,
-            name: document.getElementById("input_name").value
-          };
-          members.push(member);
-          socket.send(JSON.stringify(member));
-        });
+//         $("#submit").click(function() {
+//           var member = {
+//             number: members.length + 1,
+//             name: document.getElementById("input_name").value
+//           };
+//           members.push(member);
+//           socket.send(JSON.stringify(member));
+//         });
 
-        socket.onmessage = function(e) {
-          var msg = JSON.parse(e.data);
-          var roster = document.getElementById("roster");
-          roster.innerHTML = roster.innerHTML + msg.number + ". " + msg.name + "<br>";
-        };
-      });
+//         socket.onmessage = function(e) {
+//           var msg = JSON.parse(e.data);
+//           var roster = document.getElementById("roster");
+//           roster.innerHTML = roster.innerHTML + msg.number + ". " + msg.name + "<br>";
+//           roster.innerHTML = roster.innerHTML + "<hr/>";
+//         };
+//       });
     </script>
   
 </html>
