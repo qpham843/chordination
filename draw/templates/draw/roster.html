@@ -36,7 +36,7 @@
         width: 100%;
         height: 100%;
         z-index: -2;
-        opacity: 0.8;
+        opacity: 0.4;
       }
       form {
         text-align: center;
@@ -79,33 +79,34 @@
     </head>
 
     <body>
-      <button id = "menu" type = "button">
-        Main Menu
-      </button>
-      <h1>
-        Current Roster
-      </h1>
-      
-      <div id="roster-container">
-        <div id="roster">
-          {% for dancer in dancers %}
-            {{dancer}}
-            <br>
-          {% empty %}
-            No dancers in the roster.
-          {% endfor %}
-        </div>
-        
-      </div>
-      
-      <form action="" method="POST">
-        {% csrf_token %}
-        <input type="text" name = "first_name" id="input_name" onfocus="this.value=''"><br>
-        <button type="submit" id="submit">
-          Add Member
+      <div class = "hero">
+        <button id = "menu" type = "button">
+          Main Menu
         </button>
-      </form>
+        <h1>
+          Current Roster
+        </h1>
 
+        <div id="roster-container">
+          <div id="roster">
+            {% for dancer in dancers %}
+              {{dancer}}
+              <br>
+            {% empty %}
+              No dancers in the roster.
+            {% endfor %}
+          </div>
+
+        </div>
+
+        <form action="" method="POST">
+          {% csrf_token %}
+          <input type="text" name = "first_name" id="input_name" onfocus="this.value=''"><br>
+          <button type="submit" id="submit">
+            Add Member
+          </button>
+        </form>
+      </div>
     </body>
 
     <script>
