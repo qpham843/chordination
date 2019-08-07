@@ -4,6 +4,7 @@
 <html>
 <head>
     <meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>P4 Drawing</title>
 
     <link rel="stylesheet" type="text/css" href="{% static 'draw/vendor/bootstrap/css/bootstrap.min.css' %}">
@@ -54,9 +55,14 @@
         color: white;
         border-color: black;
       }
+      
+      /* vertical scroll bar to be fixed */
       #roster-container{
         text-align: center;
-        width: 100%;
+        width: 60%;
+        height: 60%;
+        overflow: scroll;
+        overflow-x: hidden;
       }
       #roster {
         font-family: Optima;
@@ -70,6 +76,7 @@
         height: 0;
         border-top: 1px solid rgba(0, 0, 0, 0.3);
         border-bottom: 1px solid rgba(255, 255, 255, 0.3);
+        margin: 0.1em auto;
       }
       #menu {
         margin-left: 10px;
@@ -91,6 +98,7 @@
           <div id="roster">
             {% for dancer in dancers %}
               {{dancer}}
+              <hr/>
               <br>
             {% empty %}
               No dancers in the roster.
@@ -132,7 +140,7 @@
 //           roster.innerHTML = roster.innerHTML + msg.number + ". " + msg.name + "<br>";
 //           roster.innerHTML = roster.innerHTML + "<hr/>";
 //         };
-//       });
+      });
     </script>
   
 </html>

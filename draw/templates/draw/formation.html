@@ -4,6 +4,7 @@
 <html>
 <head>
     <meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Chordination-formations</title>
     <link rel="stylesheet" type="text/css" href="{% static 'draw/vendor/bootstrap/css/bootstrap.min.css' %}">
     <link rel="stylesheet" type="text/css" href="{% static 'style.css' %}">
@@ -11,38 +12,7 @@
     <script type="text/javascript" src="{% static 'draw/vendor/bootstrap/js/bootstrap.min.js' %}"></script>
     <script type="text/javascript" src="{% static 'draw/vendor/paper/paper-full.min.js' %}"></script>
     <script type="text/javascript" src="{% static 'formation.js' %}"> </script>
-    <style>
-      body {
-        background-image: url('/static/draw/images/pastel.png');
-        font-family: 'Optima';
-        text-align: center;
-      }
-      button {
-        margin-top: 10px;
-        font-family: 'Optima';
-        border-radius: 10px;
-        font-size: 20px;
-        background-color: black;
-        color: white;
-        border-color: black;
-      } 
-      #gridStep {
-        margin-top: 10px;
-      } 
-      h3{
-        font-weight: bold;
-        font-size: 30px;
-      }
-      #formationOptions {
-        margin-top: 50px;
-      }  
-      #infoSection {
-        margin-top: 50px;
-      }
-      #roster {
-        margin-top: 20px;
-      }
-    </style>
+
 </head>
 <body>
   <button id = "menu" type = "button">
@@ -51,20 +21,24 @@
   <div id="canvases">
     <canvas id="myCanvas"></canvas>
   </div>  
-  <!--<div id="roster">
+  <div id="preset">
     <h3>
-      Roster
+      Preset Formation
     </h3>
-    <div id="members">
-      
-    </div>
-  </div> -->
+    {% for position in positions %}
+      {{position}}
+      <br>
+    {% empty %}
+      No positions in formation.
+    {% endfor %}
+  </div> 
   <div id="formationOptions"> 
     <h3>
       Formation Options
     </h3>
-    Toggle Switch <input type="checkbox" id="switchCheckBox"><br>
-    Toggle Group Move <input type="checkbox" id="groupCheckBox"><br>
+    Preset <input type="checkbox" class="css-checkbox" id="presetCheckBox"><br>
+    Toggle Switch <input type="checkbox" class="css-checkbox" id="switchCheckBox"><br>
+    Toggle Group Move <input type="checkbox" class="css-checkbox" id="groupCheckBox"><br>
     Grid Step <input type="number" id="gridStep" value="1" min="1">
   </div>  
   <div id="infoSection"> 

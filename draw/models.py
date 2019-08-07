@@ -12,6 +12,7 @@ class Dancer(models.Model):
 class Formation(models.Model):
     name = models.CharField("Name of formation", max_length=30)
     in_use = models.BooleanField("Currently in use", default=False)
+    
     def __str__(self):
       return f"{self.id}. {self.name}, in use now: {self.in_use}"
     

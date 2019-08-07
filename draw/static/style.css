@@ -11,6 +11,7 @@ canvas {
   height: 700PX;
 }
 
+
 #formationOptions {
   font-size: 24px;
   margin: 10px;
@@ -19,4 +20,64 @@ canvas {
 #infoSection {
   font-size: 24px;
   margin: 10px;
+}
+
+body {
+  background-image: url('/static/draw/images/pastel.png');
+  font-family: 'Optima';
+  text-align: center;
+}
+
+button {
+  margin-top: 10px;
+  font-family: 'Optima';
+  border-radius: 10px;
+  font-size: 20px;
+  background-color: black;
+  color: white;
+  border-color: black;
+} 
+#gridStep {
+  margin-top: 10px;
+} 
+h3{
+  font-weight: bold;
+  font-size: 30px;
+}
+#formationOptions {
+  margin-top: 30px;
+}  
+#infoSection {
+  margin-top: 30px;
+}
+
+/* To be fixed */
+input[type=checkbox].css-checkbox {
+	position:absolute; z-index:-1000; left:-1000px; overflow: hidden; clip: rect(0 0 0 0); height:1px; width:1px; margin:-1px; padding:0; border:0;
+}
+
+input[type=checkbox].css-checkbox + label.css-label {
+	padding-left:20px;
+	height:15px; 
+	display:inline-block;
+	line-height:15px;
+	background-repeat:no-repeat;
+	background-position: 0 0;
+  font-size:15px;
+	vertical-align:middle;
+	cursor:pointer;
+
+}
+
+input[type=checkbox].css-checkbox:checked + label.css-label {
+	background-position: 0 -15px;
+}
+label.css-label {
+  background-image:url(http://csscheckbox.com/checkboxes/u/csscheckbox_937202a46683b49c0454e30b8a5a5822.png);
+	-webkit-touch-callout: none;
+	-webkit-user-select: none;
+	-khtml-user-select: none;
+	-moz-user-select: none;
+	-ms-user-select: none;
+	user-select: none;
 }

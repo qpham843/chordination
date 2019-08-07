@@ -2,7 +2,7 @@ $(document).ready(()=>{
   document.getElementById("menu").onclick = function () {
       location.href = "http://p3-websockets-qpham843-qpham843667163.codeanyapp.com/draw/menu/";
   };  
-  
+
   var dancers = '{"dancers":[' +
   '{"name":"John","number":"1" },' +
   '{"name":"Anna","number":"2" },' +
@@ -34,21 +34,24 @@ $(document).ready(()=>{
   
   var selectedCirc = null;
   var selectedCircText = null;
-  var selectedCircs = new Set();
   
+  var selectedCircs = new Set();
   var selectedStart = null;
   var selectionComplete = false;
   var selectionBox = null;
-  var selection = null;
+  var selectionGroup = null;
   
   // MOUSE EVENTS
   
   tool.onMouseDown = function(event) {
-    if (!document.getElementById("switchCheckBox").checked) {
+    if (!document.getElementById("switchCheckBox").checked && !document.getElementById("groupCheckBox").checked) {
       normalMouseDown(event);
     }
     if (document.getElementById("groupCheckBox").checked) {
       selectionMouseDown(event);
+    }
+    if (document.getElementById("presetCheckBox").checked) {
+      presetMouseDown(event);
     }
   }
   
@@ -59,8 +62,7 @@ $(document).ready(()=>{
       selectionMouseUp(event);
     }  else if (selectedCirc) {
       deselect();
-    }
-    
+    } 
   }
   
   tool.onMouseDrag = function(event) {
@@ -96,7 +98,7 @@ $(document).ready(()=>{
       circText.content = dancer.number;
       circText.fontSize = 40;
       circToDancer[circ] = i;
-      circArray.push(circ);
+      circArray.push(new paper.Group([circ, circText]));
       circTextArray.push(circText);
     }
   }
@@ -116,6 +118,7 @@ $(document).ready(()=>{
     var circIndex = findCirc(event);
     if (circIndex != -1) {
       select(circIndex);
+      circTextArray[circIndex].selected = false;
     }
   }
   
@@ -123,25 +126,37 @@ $(document).ready(()=>{
     selectionStart = event.point;
     selectionBox = new paper.Path.Rectangle(event.point, event.point);
   }
+ 
+  function presetMouseDown(event) {
+    var preset = document.getElementById('preset');
+    preset.style.display = "none";
+  }
   
   function selectionMouseDrag(event) {
     if (selectionComplete) {
-      var hit = selection.hitTest(event.point, { tolerance: 0, fill: true });
+      var hit = selectionGroup.hitTest(event.point, { tolerance: 100, fill: true });
       if (hit) {
-        selection.position = event.point;
+        selectionGroup.position = event.point;
       }
     } else {
       selectionBox.remove();
       selectionBox = new paper.Path.Rectangle(selectionStart, event.point);
       selectionBox.strokeColor = "black";
       selectionBox.dashArray = [4,10];
+      dynamicSelection(event);
     }
   }
   
   function selectionMouseUp(event) {
     if (selectionComplete) {
       // Then deselect all and delete group.
+      deselect();
+      selectedCircs = new Set();
+      selectionComplete = false;
     } else {
+      selectionComplete = true;
+      selectionGroup = new paper.Group(Array.from(selectedCircs));
+      selectionBox.remove();
       // Then complete selection and create group.
     }
   }
@@ -169,6 +184,7 @@ $(document).ready(()=>{
   function select(circIndex) {
     selectedCirc = circArray[circIndex];
     selectedCirc.selected = true;
+    circTextArray[circIndex].selected = false;
     selectedCircText = circTextArray[circIndex];
     selectedCircs.add(selectedCirc);
     var dancerList = JSON.parse(dancers).dancers;
@@ -178,7 +194,9 @@ $(document).ready(()=>{
   }
   
   function deselect() {
-    selectedCirc.selected = false;
+    for (var i = 0; i < circArray.length; i++) {
+      circArray[i].selected = false;
+    }
     selectedCirc = null;
     selectedCircText = null;
     selectedCircs = new Set();
@@ -191,5 +209,16 @@ $(document).ready(()=>{
     var x = Math.floor(point.x/gridStep)*gridStep;
     var y = Math.floor(point.y/gridStep)*gridStep;
     return new paper.Point(x, y)
+  }
+  
+  function dynamicSelection(event) {
+    deselect();
+    for (var i = 0; i < circArray.length; i++) {
+      var circ = circArray[i];
+      var box = new paper.Rectangle(selectionStart, event.point);
+      if (circ.position.isInside(box)) {
+        select(i);
+      }
+    }
   }
 });
