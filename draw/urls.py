@@ -9,6 +9,8 @@ urlpatterns = [
     path('temp/', views.temp, name='temp'),
     path('formation/', views.formation, name='formation'),
     path('menu/', views.menu, name='menu'),
-    path('roster/', views.roster, name='roster')
+    path('roster/', views.roster, name='roster'),
+    path('roster_data/', views.roster_data, name='roster_data'),
+    path('formation_data/', views.formation_data, name='formation_data')
 ]
 

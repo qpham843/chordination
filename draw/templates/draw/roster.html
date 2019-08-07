@@ -8,81 +8,9 @@
     <title>P4 Drawing</title>
 
     <link rel="stylesheet" type="text/css" href="{% static 'draw/vendor/bootstrap/css/bootstrap.min.css' %}">
+    <link rel="stylesheet" type="text/css" href="{% static 'roster.css' %}">
     <script type="text/javascript" src="{% static 'draw/vendor/jquery/jquery-3.3.1.min.js' %}"></script>
     <script type="text/javascript" src="{% static 'draw/vendor/paper/paper-full.min.js' %}"></script>
-    <style type="text/css">
-      * {
-        margin: 0;
-        padding: 0;
-      }
-      html, body {
-        width: 100%;
-        height: 100%;
-      }
-      .hero {
-        width: 100%;
-        height: 100%;
-        min-width: 100%;
-        min-height: 100%;
-        position: relative;
-      }
-      .hero::before {
-        background-image: url('/static/draw/images/rosterbackground.jpg');
-        background-size: cover;
-        content: "";
-        display: block;
-        position: absolute;
-        top: 0;
-        left: 0;
-        width: 100%;
-        height: 100%;
-        z-index: -2;
-        opacity: 0.4;
-      }
-      form {
-        text-align: center;
-      }
-      h1 {
-        text-align: center;
-        font-family: 'Optima';
-      }
-      button {
-        margin-top: 10px;
-        font-family: 'Optima';
-        border-radius: 10px;
-        font-size: 20px;
-        background-color: black;
-        color: white;
-        border-color: black;
-      }
-      
-      /* vertical scroll bar to be fixed */
-      #roster-container{
-        text-align: center;
-        width: 60%;
-        height: 60%;
-        overflow: scroll;
-        overflow-x: hidden;
-      }
-      #roster {
-        font-family: Optima;
-        margin-bottom: 10px;
-        font-size: 20px;
-        display: inline-block;
-        text-align: left;
-      }
-      hr {
-        border: 0;
-        height: 0;
-        border-top: 1px solid rgba(0, 0, 0, 0.3);
-        border-bottom: 1px solid rgba(255, 255, 255, 0.3);
-        margin: 0.1em auto;
-      }
-      #menu {
-        margin-left: 10px;
-      }
-    </style>
-
     </head>
 
     <body>
@@ -96,13 +24,13 @@
 
         <div id="roster-container">
           <div id="roster">
-            {% for dancer in dancers %}
+<!--             {% for dancer in dancers %}
               {{dancer}}
               <hr/>
               <br>
             {% empty %}
               No dancers in the roster.
-            {% endfor %}
+            {% endfor %} -->
           </div>
 
         </div>
@@ -122,6 +50,33 @@
         document.getElementById("menu").onclick = function () {
           location.href = "http://p3-websockets-qpham843-qpham843667163.codeanyapp.com/draw/menu/";
         };  
+        
+        // makes a get request to the db and adds the roster names to the dom
+        $.get("{% url 'roster_data' %}", function(data) {
+          var dancers_json = data;
+          $.each(dancers_json, function( id, name_color ) {
+            //console.log(id + ". " + name_color["name"]); //dancers_json format = {id:{name,color}}
+            $("#roster").append(id + ". " + name_color["name"] + "<hr/> <br>");
+          });
+          //console.log(data)
+        });
+        
+        // makes a post request without the page reloading and adds the newly added dancer to the roster and displays on the dom
+        $("form").submit(function(){
+          $.post("{% url 'roster_data' %}", {"first_name": $("#input_name").val() , csrfmiddlewaretoken: '{{ csrf_token }}'}, function(data) {
+          // show newly added name
+          var dancers_json = data;  
+          $("#roster").empty(); 
+          // redundant (could have appended just the new dancer but don't know how to access that one?) and didn't wanted to change the api 
+          // so kept it this way for now
+          $.each(dancers_json, function( id, name_color ) {
+            $("#roster").append(id + ". " + name_color["name"] + "<hr/> <br>");
+          });  
+        })
+          return false;
+        });
+        
+        
 //         var socket = new WebSocket('wss://p3-websockets-qpham843-qpham843667163.codeanyapp.com/ws/draw');
 //         var members = [];
         
