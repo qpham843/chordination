@@ -1,7 +1,7 @@
 $(document).ready(()=>{
   document.getElementById("menu").onclick = function () {
       location.href = "http://p3-websockets-qpham843-qpham843667163.codeanyapp.com/draw/menu/";
-  };  
+  };
 
   var dancers = '{"dancers":[' +
   '{"name":"John","number":"1" },' +
@@ -41,38 +41,73 @@ $(document).ready(()=>{
   var selectionBox = null;
   var selectionGroup = null;
   
+  var layerNumber = 0;
+  
   // MOUSE EVENTS
   
   tool.onMouseDown = function(event) {
-    if (!document.getElementById("switchCheckBox").checked && !document.getElementById("groupCheckBox").checked) {
+    if (!document.getElementById("switchCheckBox").selected && !document.getElementById("groupCheckBox").selected) {
       normalMouseDown(event);
     }
-    if (document.getElementById("groupCheckBox").checked) {
+    if (document.getElementById("groupCheckBox").selected) {
       selectionMouseDown(event);
-    }
-    if (document.getElementById("presetCheckBox").checked) {
-      presetMouseDown(event);
     }
   }
   
   tool.onMouseUp = function(event) {
-    if (document.getElementById("switchCheckBox").checked) {
+    if (document.getElementById("switchCheckBox").selected) {
       switchMouseUp(event);
-    } else if (document.getElementById("groupCheckBox").checked) {
+    } else if (document.getElementById("groupCheckBox").selected) {
       selectionMouseUp(event);
     }  else if (selectedCirc) {
       deselect();
-    } 
+    }
   }
   
   tool.onMouseDrag = function(event) {
-    if (!document.getElementById("switchCheckBox").checked && !document.getElementById("groupCheckBox").checked) {
+    if (!document.getElementById("switchCheckBox").selected && !document.getElementById("groupCheckBox").selected) {
       selectedCirc.position = new paper.Point(gridPoint(event.point));
       selectedCircText.position = new paper.Point(gridPoint(event.point));
-    } else if (document.getElementById("groupCheckBox").checked) {
+    } else if (document.getElementById("groupCheckBox").selected) {
       selectionMouseDrag(event);
     }
   }
+  
+  $('#preset').hide();
+  document.getElementById("presetCheckBox").addEventListener('change', function() {
+    if(document.getElementById("presetCheckBox").checked) {
+      $('#preset').show();
+    } else {
+      $('#preset').hide();
+    }
+  });
+  
+  document.getElementById("layerOptions").addEventListener('change', function() {
+    if (document.getElementById("newLayer").selected) {
+      var newLayer = document.createElement("option");
+      layerNumber += 1;
+      newLayer.id = "layer" + layerNumber;
+      newLayer.text = "Layer " + layerNumber
+      this.size += 1;
+      document.getElementById("layersOptgroup").append(newLayer);
+      paper.project.layers.push(new paper.Layer());
+    } else {
+      for (var i = 0; i < layerNumber + 1; i++) {
+        var layer = document.getElementById("layer" + i);
+        if (layer.selected) {
+          paper.project.layers[i].activate();
+          paper.project.layers[i].opacity = 1;
+          console.log(i);
+        } else {
+          paper.project.layers[i].opacity = 0;
+        }
+      }
+    }
+  });
+  
+  document.getElementById("selectionOptions").addEventListener('change', function() {
+    deselect();
+  });
   
   // FUNCTIONS
   function createDancerList(dancers) {
@@ -125,11 +160,6 @@ $(document).ready(()=>{
   function selectionMouseDown(event) {
     selectionStart = event.point;
     selectionBox = new paper.Path.Rectangle(event.point, event.point);
-  }
- 
-  function presetMouseDown(event) {
-    var preset = document.getElementById('preset');
-    preset.style.display = "none";
   }
   
   function selectionMouseDrag(event) {
@@ -221,4 +251,11 @@ $(document).ready(()=>{
       }
     }
   }
+  
+  // get request for database
+   $.get("https://cors-anywhere.herokuapp.com/p3-websockets-qpham843-qpham843667163.codeanyapp.com/draw/formation_data", function(data) {
+     var formation_json = data;
+     console.log(data);
+    });
 });
+//https://cors-anywhere.herokuapp.com/

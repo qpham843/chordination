@@ -20,28 +20,37 @@
   </button>
   <div id="canvases">
     <canvas id="myCanvas"></canvas>
+    <select id="selectionOptions" multiple="multiple" style="overflow: auto">
+      <optgroup label="Modes">
+        <option selected="selected">Normal</option>
+        <option id="switchCheckBox">Switch</option>
+        <option id="groupCheckBox">Selection</option>
+      </optgroup>
+    </select>
+    <select id="layerOptions" multiple="multiple" size="3" style="overflow: auto">
+      <optgroup id="layersOptgroup" label="Layers">
+        <option id="newLayer">Add Layer</option>
+        <option selected="selected" id="layer0">Layer 0</option>
+      </optgroup>
+    </select>
   </div>  
   <div id="preset">
     <h3>
       Preset Formation
     </h3>
-    {% for position in positions %}
-      {{position}}
-      <br>
-    {% empty %}
-      No positions in formation.
-    {% endfor %}
+    <img src = "static/draw/images/preset1.jpg"><br>
+    <button id = "presetbutton" type = "button">
+      Select this Formation
+    </button>
   </div> 
   <div id="formationOptions"> 
     <h3>
       Formation Options
     </h3>
-    Preset <input type="checkbox" class="css-checkbox" id="presetCheckBox"><br>
-    Toggle Switch <input type="checkbox" class="css-checkbox" id="switchCheckBox"><br>
-    Toggle Group Move <input type="checkbox" class="css-checkbox" id="groupCheckBox"><br>
+    Preset <input type="checkbox" class="checkboxes" id="presetCheckBox"><br>
     Grid Step <input type="number" id="gridStep" value="1" min="1">
   </div>  
-  <div id="infoSection"> 
+  <div id="infoSection">
      <h3>
        Dancer Information
     </h3>
@@ -51,5 +60,5 @@
 
 
 </body>
-
+   
 </html>
