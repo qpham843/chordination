@@ -39,11 +39,18 @@ def roster_data(request):
 	return JsonResponse(dancers_json);
 
 def formation_data(request):
+	if request.method == 'POST':
+		if request.POST:
+			f = Formation()
+			f.name = request.POST.get('fname')
+			print(f)
+			
 	formations = Formation.objects.all()
 	formation_json = {}    #{formation_name:{positons:[(1,2),(3,4)],dancer, color}}
 	for f in formations:
 		positions = f.positions.all()
 		formation_json[f.name] = {"positions":[]}
+		formation_json["in_use"] = f.in_use 
 		for p in positions:
 			formation_json[f.name]["positions"].append([p.x, p.y, p.dancer.first_name, p.dancer.color])
 		

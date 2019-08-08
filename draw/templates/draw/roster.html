@@ -15,7 +15,7 @@
 
     <body>
       <div class = "hero">
-        <button id = "menu" type = "button">
+        <button id = "menu">
           Main Menu
         </button>
         <h1>
@@ -47,9 +47,9 @@
 
     <script>
       $(document).ready(function() {
-        document.getElementById("menu").onclick = function () {
-          location.href = "http://p3-websockets-qpham843-qpham843667163.codeanyapp.com/draw/menu/";
-        };  
+        $("#menu").on("click", () =>{ 
+          location.href = "{% url 'menu' %}";
+        });  
         
         // makes a get request to the db and adds the roster names to the dom
         $.get("{% url 'roster_data' %}", function(data) {

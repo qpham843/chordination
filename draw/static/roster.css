@@ -38,26 +38,27 @@
         font-family: 'Optima';
         border-radius: 10px;
         font-size: 20px;
-        background-color: black;
+        background-color: darkslateblue;
         color: white;
-        border-color: black;
+        border-color: darkslateblue;
+        cursor: pointer;
       }
       
-      /* vertical scroll bar to be fixed */
       #roster-container{
-        text-align: center;
-        width: 60%;
+        margin: 0 auto 30px auto;
+        width: 55%;
         height: 60%;
-        overflow: scroll;
-        overflow-x: hidden;
+        overflow-y: scroll;
+        
       }
+
+    
       #roster {
         font-family: Optima;
         margin-bottom: 10px;
         font-size: 20px;
         display: inline-block;
-        text-align: left;
-      }
+}
       hr {
         border: 0;
         height: 0;

@@ -20,15 +20,35 @@ $(document).ready(()=>{
   '{"name":"John","number":"1","position":[123,123],"color":"#808080" },' +
   '{"name":"Anna","number":"2","position":[321,321],"color":"#ffffff" }]}';
   
+  
+  
   // INITIALIZATION
   var canvas = document.getElementById('myCanvas');
-  var tool = new paper.Tool();
+  //Save SVG from paper.js as a file.
+  
   paper.setup(canvas);
+  var tool = new paper.Tool();
+ 
   var socket = new WebSocket('wss://p3-websockets-qpham843-qpham843667163.codeanyapp.com/ws/draw');
-  var circArray = [];
+  var circArray = []; 
+  //Each entry in here is a Paper JS Group containing the Path (Circle) and Text (TextPosition). To get the position, just do circArray[i].position
+  // [Group, Group, Group, ...]
   var circTextArray = [];
   var circToDancer = {};
+  //Each entry in here is a key value pair. The key is the group from circArray, and the value is the index of that dancer in the data. 
+  // {{Group: 1}, {Group: 2}, ...}
+    
+  function getRoster() {
+    var temp = [2];
+    $.get("/draw/roster_data", function(data) {
+      temp.push(data);
+    });
+    return temp;
+  }
   
+  var getTest = getData("Preset 1");
+  var roster = getRoster();
+  console.log(roster);
   createDancerList(dancers);
   paper.view.draw();
   
@@ -73,14 +93,28 @@ $(document).ready(()=>{
     }
   }
   
-  $('#preset').hide();
+  $('.preset').hide();
   document.getElementById("presetCheckBox").addEventListener('change', function() {
     if(document.getElementById("presetCheckBox").checked) {
-      $('#preset').show();
+      $('.preset').show();
+
     } else {
-      $('#preset').hide();
+      $('.preset').hide();
+   
     }
   });
+  
+  //Export SVG, in progress
+  document.addEventListener("DOMContentLoaded", function(event) { 
+    document.getElementById("save").onclick = function(){
+     var fileName = "custom.svg"
+     var url = "data:image/svg+xml;utf8," + encodeURIComponent(paper.project.exportSVG({asString:true}));
+     var link = document.createElement("a");
+     link.download = fileName;
+     link.href = url;
+     link.click();
+    }
+   });
   
   document.getElementById("layerOptions").addEventListener('change', function() {
     if (document.getElementById("newLayer").selected) {
@@ -97,7 +131,6 @@ $(document).ready(()=>{
         if (layer.selected) {
           paper.project.layers[i].activate();
           paper.project.layers[i].opacity = 1;
-          console.log(i);
         } else {
           paper.project.layers[i].opacity = 0;
         }
@@ -116,6 +149,11 @@ $(document).ready(()=>{
       var dancer = dancerList[i];
       var x = 40;
       var y = 40 + 80*i;
+      if (y + 30 > canvas.height) {
+        var xshift = Math.floor(y/canvas.height) + 2;
+        x = 40*3;
+        y = 40 + 80*(i - 8)
+      }
       if (dancer.position) {
         x = parseInt(dancer.position[0]);
         y = parseInt(dancer.position[1]);
@@ -126,20 +164,30 @@ $(document).ready(()=>{
       if (dancer.color) {
         color = dancer.color;
       }
+      circ.strokeColor = "black";
       circ.fillColor = color;
-      circ.strokeColor = '#000000';
-      
-      var circText = new paper.PointText(new paper.Point(x-10, y+15));
+      circText = new paper.PointText(new paper.Point(x, y + 15));
       circText.content = dancer.number;
       circText.fontSize = 40;
-      circToDancer[circ] = i;
-      circArray.push(new paper.Group([circ, circText]));
+      circText.justification = 'center';
+      
+      var group = new paper.Group([circ, circText]);
+      circToDancer[group] = i;
+      circArray.push(group);
       circTextArray.push(circText);
     }
   }
   
+  function loadDancerList(dancers) {
+    for (var i = 0; i < dancers.length; i ++) {
+      var dancer = dancers[i];
+      var x = 40;
+      var y = 40 + 80*i;
+    }
+  }
+  
   function findCirc(event) {
-    for (var i = 0; i < circArray.length; i++) {
+    for (var i = 0; i < circArray.length; i ++) {
       var circ = circArray[i];
       var hit = circ.hitTest(event.point, { tolerance: 0, fill: true });
       if (hit) {
@@ -252,10 +300,46 @@ $(document).ready(()=>{
     }
   }
   
-  // get request for database
-   $.get("https://cors-anywhere.herokuapp.com/p3-websockets-qpham843-qpham843667163.codeanyapp.com/draw/formation_data", function(data) {
+  function getData(presetName) {
+    $.get("/draw/formation_data", function(data) {
+    var positions = data[presetName];
+    });
+  }
+  
+  
+// TEST CODE DON'T DELETE  
+//   var formation_data = {csrfmiddlewaretoken: '{{ csrf_token }}', fname: $("finput").val(), positions: []};
+//     var length_circArray = circArray.length;
+//     for (var i = 0; i < length_circArray; i++){
+//       formation_data.positions.push([circArray[i].children[0].position.x, circArray[i].children[0].position.y]);
+//     }
+  
+  
+//   console.log(formation_data);
+  // save formation button functionality
+  $("#save").submit(function(){ 
+    var formation_data = {csrfmiddlewaretoken: '{{ csrf_token }}', fname: $("finput").val(), positions: []};
+    var length_circArray = circArray.length;
+    for (var i = 0; i < length_circArray; i++){
+      formation_data.positions.push([circArray[i].children[0].position.x, circArray[i].children[0].position.y]);
+    }
+    $.post("/draw/formation_data", 
+           formation_data, (callback_data) => {
+      
+    });
+    
+    return false;
+    //Fill Color: circArray[i].children[0].fillColor.toCanvasStyle()
+    //Position: circArray[i].children[0].position
+    //Dancer Index: circToDancer[circArray[i]]       circToDancer = {group:1, ..}
+    //Dancer Name: data[Dancer Index]
+    //Dancer Number: Dancer Index
+  });
+      
+  // get requesrostert for database
+   $.get("/draw/formation_data", function(data) {
      var formation_json = data;
-     console.log(data);
+     console.log(formation_json);
     });
 });
 //https://cors-anywhere.herokuapp.com/

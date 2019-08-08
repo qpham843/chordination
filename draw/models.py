@@ -10,7 +10,7 @@ class Dancer(models.Model):
       return f"{self.id}. {self.first_name}"
     
 class Formation(models.Model):
-    name = models.CharField("Name of formation", max_length=30)
+    name = models.CharField("Name of formation", max_length=30, default=False)
     in_use = models.BooleanField("Currently in use", default=False)
     
     def __str__(self):

@@ -15,11 +15,11 @@
 
 </head>
 <body>
-  <button id = "menu" type = "button">
+  <button id = "menu">
     Main Menu
   </button>
   <div id="canvases">
-    <canvas id="myCanvas"></canvas>
+    <canvas id="myCanvas" resize="true"></canvas>
     <select id="selectionOptions" multiple="multiple" style="overflow: auto">
       <optgroup label="Modes">
         <option selected="selected">Normal</option>
@@ -34,14 +34,21 @@
       </optgroup>
     </select>
   </div>  
-  <div id="preset">
+  <div class="preset">
     <h3>
-      Preset Formation
+      Preset Formations
     </h3>
-    <img src = "static/draw/images/preset1.jpg"><br>
-    <button id = "presetbutton" type = "button">
-      Select this Formation
-    </button>
+    <div class = "image-container">
+      <div id = "1stimage">
+        <img id = "img1" src = "/static/draw/images/preset1.jpg"><br>
+      </div>
+      <div id = "2ndimage">
+        <img id = "img2" src = "/static/draw/images/preset2.jpg"><br>
+      </div>
+      <div id = "3rdimage">
+        <img id = "img3" src = "/static/draw/images/preset2.jpg"><br>
+      </div>
+    </div>
   </div> 
   <div id="formationOptions"> 
     <h3>
@@ -57,7 +64,8 @@
      <p id="Name">Name:</p>
      <p id="Number">Number:</p>
   </div>
-
+  <button id="save" type="submit">Save Formation</button>
+  <input type="text" id ="finput">
 
 </body>
    
