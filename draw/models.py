@@ -23,4 +23,4 @@ class Position(models.Model):
     y = models.IntegerField("y-coordinate")
     
     def __str__(self):
-      return f"({self.x},{self.y})"    
+      return f"({self.x},{self.y}) in {self.formation}"    

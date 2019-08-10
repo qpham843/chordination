@@ -9,8 +9,8 @@
 
     <link rel="stylesheet" type="text/css" href="{% static 'draw/vendor/bootstrap/css/bootstrap.min.css' %}">
     <link rel="stylesheet" type="text/css" href="{% static 'roster.css' %}">
-    <script type="text/javascript" src="{% static 'draw/vendor/jquery/jquery-3.3.1.min.js' %}"></script>
     <script type="text/javascript" src="{% static 'draw/vendor/paper/paper-full.min.js' %}"></script>
+    <script type="text/javascript" src="{% static 'draw/vendor/jquery/jquery-3.3.1.min.js' %}"></script>
     </head>
 
     <body>
@@ -41,6 +41,9 @@
           <button type="submit" id="submit">
             Add Member
           </button>
+          <button type="submit" id="delete">
+            Remove Member
+          </button>
         </form>
       </div>
     </body>
@@ -51,50 +54,42 @@
           location.href = "{% url 'menu' %}";
         });  
         
+        function looping_through_roster(roster_json){
+          $("#roster").empty();
+          $.each(roster_json, function( id, name_color ) {
+            $("#roster").append(id + ". " + name_color["name"] + "<hr/> <br>");
+          }); 
+        }
+        
         // makes a get request to the db and adds the roster names to the dom
         $.get("{% url 'roster_data' %}", function(data) {
+          // show roster
           var dancers_json = data;
-          $.each(dancers_json, function( id, name_color ) {
-            //console.log(id + ". " + name_color["name"]); //dancers_json format = {id:{name,color}}
-            $("#roster").append(id + ". " + name_color["name"] + "<hr/> <br>");
-          });
-          //console.log(data)
+          looping_through_roster(dancers_json);
         });
         
         // makes a post request without the page reloading and adds the newly added dancer to the roster and displays on the dom
-        $("form").submit(function(){
-          $.post("{% url 'roster_data' %}", {"first_name": $("#input_name").val() , csrfmiddlewaretoken: '{{ csrf_token }}'}, function(data) {
+        $("#submit").on("click", function(){
+          $.post("{% url 'roster_data' %}", {"first_name": $("#input_name").val() , action: 'add', csrfmiddlewaretoken: '{{ csrf_token }}'}, function(data) {
           // show newly added name
           var dancers_json = data;  
-          $("#roster").empty(); 
-          // redundant (could have appended just the new dancer but don't know how to access that one?) and didn't wanted to change the api 
-          // so kept it this way for now
-          $.each(dancers_json, function( id, name_color ) {
-            $("#roster").append(id + ". " + name_color["name"] + "<hr/> <br>");
-          });  
+          looping_through_roster(dancers_json);
+          $("#input_name").val('');
         })
           return false;
         });
         
+        // makes a post request without the page reloading and deletes the entered dancer from the roster and displays the updated roster on the dom
+        $("#delete").on("click", function(){
+          $.post("{% url 'roster_data' %}", {"first_name": $("#input_name").val() , action: 'delete', csrfmiddlewaretoken: '{{ csrf_token }}'}, function(data) {
+          // show roster with deleted name
+          var dancers_json = data;  
+          looping_through_roster(dancers_json);
+          $("#input_name").val('');  
+        })
+          return false;
+        });
         
-//         var socket = new WebSocket('wss://p3-websockets-qpham843-qpham843667163.codeanyapp.com/ws/draw');
-//         var members = [];
-        
-//         $("#submit").click(function() {
-//           var member = {
-//             number: members.length + 1,
-//             name: document.getElementById("input_name").value
-//           };
-//           members.push(member);
-//           socket.send(JSON.stringify(member));
-//         });
-
-//         socket.onmessage = function(e) {
-//           var msg = JSON.parse(e.data);
-//           var roster = document.getElementById("roster");
-//           roster.innerHTML = roster.innerHTML + msg.number + ". " + msg.name + "<br>";
-//           roster.innerHTML = roster.innerHTML + "<hr/>";
-//         };
       });
     </script>
   
