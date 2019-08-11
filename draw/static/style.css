@@ -89,7 +89,7 @@ input[type='checkbox'] {
   overflow-x: hidden;
 }
 
-select, input {
+select, input, textarea {
   background-color: lightblue;
 }
 

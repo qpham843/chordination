@@ -10,12 +10,19 @@ $(document).ready(()=>{
   paper.setup(canvas);
   var tool = new paper.Tool();
   
-  //show formation images
-  $.get("/draw/formation_data").done(function(formation_json) {
-    $.each(formation_json, function(form_name, data ) {
+  //show formation images function
+  function formationPics(){
+    $.get("/draw/formation_data").done(function(formation_json) {
+      $(".image-container").empty();
+      $(".image-container").append("Saved Formations <br>");
+      $.each(formation_json, function(form_name, data ) {
       $(".image-container").append("<img id='"+ form_name + "'" +"src=" + data.image + "><br> <b>" + form_name +"</b><hr>");
     }); 
   });
+  }
+  // load formation images from db
+  formationPics();
+  
  
   var dancers = null;
   var circArray = [0]; 
@@ -36,6 +43,7 @@ $(document).ready(()=>{
     $.get("/draw/formation_data").done(function(data) {
       dancers = {};
       var tempList = data[preset].positions;
+      $("#notes").val(data[preset].notes);
       for (var i = 0; i < tempList.length; i ++) {
         var temp = tempList[i];
         var dancer = {};
@@ -296,8 +304,8 @@ $(document).ready(()=>{
     }
     selectedCirc = null;
     selectedCircs = new Set();
-    document.getElementById("Name").innerHTML = "Name: ";
-    document.getElementById("Number").innerHTML = "Number: ";
+//     document.getElementById("Name").innerHTML = "Name: ";
+//     document.getElementById("Number").innerHTML = "Number: ";
   }
   
   function gridPoint(point) {
@@ -323,7 +331,7 @@ $(document).ready(()=>{
   // save formation button functionality/ adding data in django db
   $("#save").on("click", function(){ 
     var dataURL = canvas.toDataURL();
-    var formation_data = {fname: $("#finput").val(), csrfmiddlewaretoken: csrf_thing, action: 'save', image: dataURL ,'notes': 'My first formation'};
+    var formation_data = {fname: $("#finput").val(), csrfmiddlewaretoken: csrf_thing, action: 'save', image: dataURL ,'notes': $("#notes").val()};
     var length_circArray = circArray.length;
     var positions = [];
     for (var i = 1; i < length_circArray; i++){
@@ -332,7 +340,8 @@ $(document).ready(()=>{
     formation_data.positions = JSON.stringify(positions);
     console.log(formation_data);
     $.post("/draw/formation_data/", 
-           formation_data, (callback_data) => {       
+           formation_data, (callback_data) => {
+           formationPics();
     });
     return false;
   });
@@ -340,10 +349,10 @@ $(document).ready(()=>{
   // delete formation
   $("#delete").on("click", ()=>{
     var dataURL = canvas.toDataURL();
-    var formation_data = {fname: $("#finput").val(), csrfmiddlewaretoken: csrf_thing, action: 'delete', image: dataURL ,'notes': 'delete formation'};
+    var formation_data = {fname: $("#finput").val(), csrfmiddlewaretoken: csrf_thing, action: 'delete', image: dataURL ,'notes': $("#notes").val()};
     $.post("/draw/formation_data/", 
            formation_data, (callback_data) => {
-           //TODO: reload formation pics
+           formationPics();
     });
     return false;
   });
