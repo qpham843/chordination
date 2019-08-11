@@ -1,59 +1,63 @@
 $(document).ready(()=>{
-  document.getElementById("menu").onclick = function () {
-      location.href = "http://p3-websockets-qpham843-qpham843667163.codeanyapp.com/draw/menu/";
-  };
+  $("#menu").on("click",function () {
+      location.href = "/draw/menu/";
+  });
 
-  var dancers = '{"dancers":[' +
-  '{"name":"John","number":"1" },' +
-  '{"name":"Anna","number":"2" },' +
-  '{"name":"Doe","number":"3" },' +
-  '{"name":"Smith","number":"4" },' +
-  '{"name":"Elissa","number":"5" },' +
-  '{"name":"Aeden","number":"6" },' +
-  '{"name":"Sarah","number":"7" },' +
-  '{"name":"Steven","number":"8" },' +
-  '{"name":"Jean","number":"9" },' +
-  '{"name":"Conny","number":"10" },' +
-  '{"name":"Peter","number":"11" }]}';
-  
-  var tempDancers = '{"dancers":[' +
-  '{"name":"John","number":"1","position":[123,123],"color":"#808080" },' +
-  '{"name":"Anna","number":"2","position":[321,321],"color":"#ffffff" }]}';
-  
-  
-  
   // INITIALIZATION
   var canvas = document.getElementById('myCanvas');
   //Save SVG from paper.js as a file.
   
   paper.setup(canvas);
   var tool = new paper.Tool();
+  
+  //show formation images
+  $.get("/draw/formation_data").done(function(formation_json) {
+    $.each(formation_json, function(form_name, data ) {
+      $(".image-container").append("<img id='"+ form_name + "'" +"src=" + data.image + "><br> <b>" + form_name +"</b><hr>");
+    }); 
+  });
  
-  var socket = new WebSocket('wss://p3-websockets-qpham843-qpham843667163.codeanyapp.com/ws/draw');
-  var circArray = []; 
+  var dancers = null;
+  var circArray = [0]; 
   //Each entry in here is a Paper JS Group containing the Path (Circle) and Text (TextPosition). To get the position, just do circArray[i].position
   // [Group, Group, Group, ...]
-  var circTextArray = [];
   var circToDancer = {};
   //Each entry in here is a key value pair. The key is the group from circArray, and the value is the index of that dancer in the data. 
   // {{Group: 1}, {Group: 2}, ...}
-    
-  function getRoster() {
-    var temp = [2];
-    $.get("/draw/roster_data", function(data) {
-      temp.push(data);
-    });
-    return temp;
+  
+  function loadRoster() {
+    $.get("/draw/roster_data").done(function(data) {
+      dancers = data;
+      createDancerList(data);
+    })
   }
   
-  var getTest = getData("Preset 1");
-  var roster = getRoster();
-  console.log(roster);
-  createDancerList(dancers);
+  function loadFormation(preset) {
+    $.get("/draw/formation_data").done(function(data) {
+      dancers = {};
+      var tempList = data[preset].positions;
+      for (var i = 0; i < tempList.length; i ++) {
+        var temp = tempList[i];
+        var dancer = {};
+        dancer.name = temp[2];
+        dancer.color = temp[3];
+        dancer.position = {};
+        dancer.position.x = temp[0];
+        dancer.position.y = temp[1];
+        dancers[i + 1] = dancer;
+      }
+      paper.project.activeLayer.removeChildren();
+      createDancerList(dancers);
+    })
+  }
+  
+  
+  
+  loadRoster();
+  //loadFormation("Preset 1");
   paper.view.draw();
   
   var selectedCirc = null;
-  var selectedCircText = null;
   
   var selectedCircs = new Set();
   var selectedStart = null;
@@ -85,78 +89,59 @@ $(document).ready(()=>{
   }
   
   tool.onMouseDrag = function(event) {
-    if (!document.getElementById("switchCheckBox").selected && !document.getElementById("groupCheckBox").selected) {
+    if (!document.getElementById("switchCheckBox").selected && !document.getElementById("groupCheckBox").selected && selectedCirc) {
       selectedCirc.position = new paper.Point(gridPoint(event.point));
-      selectedCircText.position = new paper.Point(gridPoint(event.point));
     } else if (document.getElementById("groupCheckBox").selected) {
       selectionMouseDrag(event);
     }
   }
   
+  tool.onMouseMove = function(event) {
+    normalMouseMove(event);
+  }
+  
   $('.preset').hide();
   document.getElementById("presetCheckBox").addEventListener('change', function() {
-    if(document.getElementById("presetCheckBox").checked) {
-      $('.preset').show();
-
-    } else {
-      $('.preset').hide();
-   
-    }
+    $('.preset').toggle();
   });
-  
-  //Export SVG, in progress
-  document.addEventListener("DOMContentLoaded", function(event) { 
-    document.getElementById("save").onclick = function(){
-     var fileName = "custom.svg"
-     var url = "data:image/svg+xml;utf8," + encodeURIComponent(paper.project.exportSVG({asString:true}));
-     var link = document.createElement("a");
-     link.download = fileName;
-     link.href = url;
-     link.click();
-    }
-   });
   
   document.getElementById("layerOptions").addEventListener('change', function() {
     if (document.getElementById("newLayer").selected) {
-      var newLayer = document.createElement("option");
       layerNumber += 1;
-      newLayer.id = "layer" + layerNumber;
-      newLayer.text = "Layer " + layerNumber
       this.size += 1;
-      document.getElementById("layersOptgroup").append(newLayer);
-      paper.project.layers.push(new paper.Layer());
-    } else {
-      for (var i = 0; i < layerNumber + 1; i++) {
-        var layer = document.getElementById("layer" + i);
-        if (layer.selected) {
-          paper.project.layers[i].activate();
-          paper.project.layers[i].opacity = 1;
-        } else {
-          paper.project.layers[i].opacity = 0;
-        }
-      }
+      var newLayerOption = document.createElement("option");
+      newLayerOption.id = "layer" + layerNumber;
+      newLayerOption.text = "Layer " + layerNumber;
+      document.getElementById("layersOptgroup").append(newLayerOption);
+      document.getElementById("newLayer").selected = false;
+      newLayerOption.selected = true;
+      
+      var newLayer = new paper.Layer();
+      paper.project.layers.push(newLayer);
+      newLayer.activate();
+      loadRoster();
     }
+    checkLayers();
   });
   
   document.getElementById("selectionOptions").addEventListener('change', function() {
     deselect();
   });
   
+  
   // FUNCTIONS
-  function createDancerList(dancers) {
-    var dancerList = JSON.parse(dancers).dancers;
-    for (var i = 0; i < dancerList.length; i ++) {
+  function createDancerList(dancerList) {
+    for (var i in dancerList) {
       var dancer = dancerList[i];
-      var x = 40;
-      var y = 40 + 80*i;
-      if (y + 30 > canvas.height) {
-        var xshift = Math.floor(y/canvas.height) + 2;
-        x = 40*3;
-        y = 40 + 80*(i - 8)
+     var x = 40;
+      var y = -40 + 80*i;
+      if (y + 50 > canvas.height) {
+        x = 40 + 40*2*(Math.floor((y+50)/canvas.height));
+        y = 15 + (80*i) - canvas.height;
       }
       if (dancer.position) {
-        x = parseInt(dancer.position[0]);
-        y = parseInt(dancer.position[1]);
+        x = parseInt(dancer.position.x);
+        y = parseInt(dancer.position.y);
       }
       var circ = new paper.Path.Circle(new paper.Point(x, y), 30);
       
@@ -167,17 +152,16 @@ $(document).ready(()=>{
       circ.strokeColor = "black";
       circ.fillColor = color;
       circText = new paper.PointText(new paper.Point(x, y + 15));
-      circText.content = dancer.number;
+      circText.content = i;
       circText.fontSize = 40;
       circText.justification = 'center';
       
       var group = new paper.Group([circ, circText]);
       circToDancer[group] = i;
       circArray.push(group);
-      circTextArray.push(circText);
     }
   }
-  
+    
   function loadDancerList(dancers) {
     for (var i = 0; i < dancers.length; i ++) {
       var dancer = dancers[i];
@@ -186,9 +170,32 @@ $(document).ready(()=>{
     }
   }
   
+  function checkLayers() {
+    var activated = 0;
+    for (var i=0; i < layerNumber + 1; i++) {
+      var layer = document.getElementById("layer" + i);
+      if (layer.selected) {
+        activated += 1;
+        paper.project.layers[i].activate();
+        paper.project.layers[i].visible = true;
+        paper.project.layers[i].opacity = 1/activated;
+      } else {
+        paper.project.layers[i].visible = false;
+        paper.project.layers[i].locked = true;
+      }
+    }
+  }
+
+  
   function findCirc(event) {
-    for (var i = 0; i < circArray.length; i ++) {
+    for (var i = 1; i < circArray.length + 1; i ++) {
       var circ = circArray[i];
+      /*if (!(paper.project.activeLayer.children.includes(circ))) {
+        continue;
+      }*/
+      if (!circ) {
+        continue;
+      }
       var hit = circ.hitTest(event.point, { tolerance: 0, fill: true });
       if (hit) {
         return i;
@@ -201,7 +208,7 @@ $(document).ready(()=>{
     var circIndex = findCirc(event);
     if (circIndex != -1) {
       select(circIndex);
-      circTextArray[circIndex].selected = false;
+      circArray[circIndex].children[1].selected = false;
     }
   }
   
@@ -227,7 +234,6 @@ $(document).ready(()=>{
   
   function selectionMouseUp(event) {
     if (selectionComplete) {
-      // Then deselect all and delete group.
       deselect();
       selectedCircs = new Set();
       selectionComplete = false;
@@ -235,7 +241,6 @@ $(document).ready(()=>{
       selectionComplete = true;
       selectionGroup = new paper.Group(Array.from(selectedCircs));
       selectionBox.remove();
-      // Then complete selection and create group.
     }
   }
   
@@ -245,11 +250,8 @@ $(document).ready(()=>{
       if (circIndex != -1) {
         var tempPos = selectedCirc.position;
         var circ = circArray[circIndex];
-        var circText = circTextArray[circIndex];
         selectedCirc.position = circ.position;
-        selectedCircText.position = circText.position;
         circ.position = tempPos;
-        circText.position = tempPos;
       }
       deselect();
     } else {
@@ -259,24 +261,40 @@ $(document).ready(()=>{
     }
   }
   
+  var namePopup = new paper.PointText(0,0);
+  var popupRect = new paper.Path.Rectangle(namePopup.bounds)
+  
+  function normalMouseMove(event) {
+    var circIndex = findCirc(event);
+    namePopup.remove();
+    popupRect.remove();
+    if (circIndex != -1) {
+      var dancer = dancers[circIndex];
+      namePopup = new paper.PointText(event.point);
+      namePopup.point.x += 5;
+      namePopup.point.y -= 5;
+      namePopup.content = " " + dancer.name + " ";
+      namePopup.fillColor = "white";
+      namePopup.fontSize = 20;
+      popupRect = new paper.Path.Rectangle(namePopup.bounds);
+      popupRect.fillColor = 'black';
+      popupRect.strokeColor = 'black';
+      namePopup.insertAbove(popupRect);
+    }
+  }
+  
   function select(circIndex) {
     selectedCirc = circArray[circIndex];
     selectedCirc.selected = true;
-    circTextArray[circIndex].selected = false;
-    selectedCircText = circTextArray[circIndex];
+    selectedCirc.children[1].selected = false;
     selectedCircs.add(selectedCirc);
-    var dancerList = JSON.parse(dancers).dancers;
-    var dancer = dancerList[circIndex];
-    document.getElementById("Name").innerHTML = "<strong>Name: </strong>" + dancer.name;
-    document.getElementById("Number").innerHTML = "<strong>Number: </strong>" + dancer.number;
   }
   
   function deselect() {
-    for (var i = 0; i < circArray.length; i++) {
+    for (var i = 1; i < circArray.length; i++) {
       circArray[i].selected = false;
     }
     selectedCirc = null;
-    selectedCircText = null;
     selectedCircs = new Set();
     document.getElementById("Name").innerHTML = "Name: ";
     document.getElementById("Number").innerHTML = "Number: ";
@@ -291,55 +309,55 @@ $(document).ready(()=>{
   
   function dynamicSelection(event) {
     deselect();
-    for (var i = 0; i < circArray.length; i++) {
+    for (var i = 1; i < circArray.length; i++) {
       var circ = circArray[i];
       var box = new paper.Rectangle(selectionStart, event.point);
-      if (circ.position.isInside(box)) {
+      if (circ.position.isInside(box) /*&& paper.project.activeLayer.children.includes(circ)*/) {
         select(i);
       }
     }
   }
   
-  function getData(presetName) {
-    $.get("/draw/formation_data", function(data) {
-    var positions = data[presetName];
-    });
-  }
   
   
-// TEST CODE DON'T DELETE  
-//   var formation_data = {csrfmiddlewaretoken: '{{ csrf_token }}', fname: $("finput").val(), positions: []};
-//     var length_circArray = circArray.length;
-//     for (var i = 0; i < length_circArray; i++){
-//       formation_data.positions.push([circArray[i].children[0].position.x, circArray[i].children[0].position.y]);
-//     }
-  
-  
-//   console.log(formation_data);
-  // save formation button functionality
-  $("#save").submit(function(){ 
-    var formation_data = {csrfmiddlewaretoken: '{{ csrf_token }}', fname: $("finput").val(), positions: []};
+  // save formation button functionality/ adding data in django db
+  $("#save").on("click", function(){ 
+    var dataURL = canvas.toDataURL();
+    var formation_data = {fname: $("#finput").val(), csrfmiddlewaretoken: csrf_thing, action: 'save', image: dataURL ,'notes': 'My first formation'};
     var length_circArray = circArray.length;
-    for (var i = 0; i < length_circArray; i++){
-      formation_data.positions.push([circArray[i].children[0].position.x, circArray[i].children[0].position.y]);
+    var positions = [];
+    for (var i = 1; i < length_circArray; i++){
+      positions.push([circArray[i].children[0].position.x, circArray[i].children[0].position.y]);
     }
-    $.post("/draw/formation_data", 
-           formation_data, (callback_data) => {
-      
+    formation_data.positions = JSON.stringify(positions);
+    console.log(formation_data);
+    $.post("/draw/formation_data/", 
+           formation_data, (callback_data) => {       
     });
-    
     return false;
+  });
+  
+  // delete formation
+  $("#delete").on("click", ()=>{
+    var dataURL = canvas.toDataURL();
+    var formation_data = {fname: $("#finput").val(), csrfmiddlewaretoken: csrf_thing, action: 'delete', image: dataURL ,'notes': 'delete formation'};
+    $.post("/draw/formation_data/", 
+           formation_data, (callback_data) => {
+           //TODO: reload formation pics
+    });
+    return false;
+  });
+  
+  // load formations from images
+  $("body").on("click", "img", function(){
+    loadFormation(this.id); 
+    console.log("Image selected with id:" + this.id);
+  });
     //Fill Color: circArray[i].children[0].fillColor.toCanvasStyle()
     //Position: circArray[i].children[0].position
-    //Dancer Index: circToDancer[circArray[i]]       circToDancer = {group:1, ..}
+    //Dancer Index: circToDancer[circArray[i]]   circToDancer = {group:1, ..}
     //Dancer Name: data[Dancer Index]
     //Dancer Number: Dancer Index
-  });
       
-  // get requesrostert for database
-   $.get("/draw/formation_data", function(data) {
-     var formation_json = data;
-     console.log(formation_json);
-    });
 });
 //https://cors-anywhere.herokuapp.com/

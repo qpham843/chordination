@@ -15,9 +15,6 @@
 
 </head>
 <body>
-  <button id = "menu">
-    Main Menu
-  </button>
   <div id="canvases">
     <canvas id="myCanvas" resize="true"></canvas>
     <select id="selectionOptions" multiple="multiple" style="overflow: auto">
@@ -34,39 +31,49 @@
       </optgroup>
     </select>
   </div>  
-  <div class="preset">
-    <h3>
-      Preset Formations
-    </h3>
-    <div class = "image-container">
-      <div id = "1stimage">
-        <img id = "img1" src = "/static/draw/images/preset1.jpg"><br>
-      </div>
-      <div id = "2ndimage">
-        <img id = "img2" src = "/static/draw/images/preset2.jpg"><br>
-      </div>
-      <div id = "3rdimage">
-        <img id = "img3" src = "/static/draw/images/preset2.jpg"><br>
-      </div>
+  <div class = "rightcolumn">
+  <button id = "menu">
+    Main Menu
+  </button>
+    <div id="formationOptions"> 
+      <h3>
+        Formation Options
+      </h3>
+      Show Formations <input type="checkbox" class="checkboxes" id="presetCheckBox"><br>
+      Grid Step <input type="number" id="gridStep" value="1" min="1">
+    </div>  
+    <div id="infoSection">
+       <hr class = "divider">
+        Formation Name: 
+        <input type="text" id ="finput"><br>
+        <button id="save" type="submit">Save </button>
+        <button id="delete" type="submit">Delete </button>
+        <hr class = "divider">
+       </div>
     </div>
-  </div> 
-  <div id="formationOptions"> 
-    <h3>
-      Formation Options
-    </h3>
-    Preset <input type="checkbox" class="checkboxes" id="presetCheckBox"><br>
-    Grid Step <input type="number" id="gridStep" value="1" min="1">
-  </div>  
-  <div id="infoSection">
-     <h3>
-       Dancer Information
-    </h3>
-     <p id="Name">Name:</p>
-     <p id="Number">Number:</p>
   </div>
-  <button id="save" type="submit">Save Formation</button>
-  <input type="text" id ="finput">
+  <div class="preset">
+    <br>
+      <h3>
+        Formations
+      </h3>
+      <div class = "image-container">
+        Preset Formations
+        <div id = "1stimage">
+          <img id = "img1" src = "/static/draw/images/preset1.jpg"><br><hr>
+        </div>
+        <div id = "2ndimage">
+          <img id = "img2" src = "/static/draw/images/preset2.jpg"><br><hr>
+        </div>
+        <div id = "3rdimage">
+          <img id = "img3" src = "/static/draw/images/preset2.jpg"><br><hr>
+        </div>
+        Saved Formations <br>
+      </div>
+    </div> 
 
 </body>
-   
+  <script>
+    var csrf_thing = '{{ csrf_token }}';
+  </script>  
 </html>

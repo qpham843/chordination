@@ -11,12 +11,7 @@ def temp(request):
 	return render(request, "draw/temp.html")
   
 def formation(request):
-	context = {
-          "dancers": Dancer.objects.all(),
-					"formations": Formation.objects.all(),
-					"positions": Position.objects.all()
-      }
-	return render(request, "draw/formation.html", context)
+	return render(request, "draw/formation.html")
 
 def menu(request):
   return render(request, "draw/menu.html")
@@ -34,7 +29,7 @@ def roster_data(request):
 		elif (request.POST.get('action') == 'delete'):
 			dancer = Dancer.objects.get(first_name__iexact = request.POST.get('first_name'))  #case insensitive
 			print(dancer)	
-# 			dancer.delete()
+			dancer.delete()
 			
 	dancers = Dancer.objects.all();
 	dancers_json = {}
@@ -47,27 +42,35 @@ def formation_data(request):
 	if request.method == 'POST':
 		if (request.POST.get('action') == 'save'):       #save functionality
 			f = Formation()
-			f.name = request.POST.get('fname')
+			if (request.POST.get('fname')):
+				f.name = request.POST.get('fname')
+			if (request.POST.get('notes')):
+				f.notes = request.POST.get('notes')
+			f.image = request.POST.get('image')	
 			pos_array = json.loads(request.POST.get('positions'))
+			f.save()
 			print(pos_array)
 			for pos in pos_array:
 				p = Position()
 				p.x = pos[0]
 				p.y = pos[1]
 				p.formation = f
-				print(p)
-				print(f)
+				p.save()
 		elif (request.POST.get('action') == 'delete'):   #delete functionality
-			f = Formation.objects.get(first_name__iexact = request.POST.get('name'))
+			if (request.POST.get('fname')):
+				f = Formation.objects.get(name__iexact = request.POST.get('fname'))
+				f.delete()
 				
 	formations = Formation.objects.all()
-	formation_json = {}    #{formation_name:{positons:[(1,2),(3,4)],dancer, color}}
+	formation_json = {}    #{formation_name:{positons:[(1,2),(3,4)],dancer, color, image}}
 	for f in formations:
 		positions = f.positions.all()
-		formation_json[f.name] = {"positions":[]}
-		formation_json["in_use"] = f.in_use 
+		formation_json[f.name] = {"positions":[], "in_use":f.in_use, "notes": f.notes, "image":f.image}
 		for p in positions:
-			formation_json[f.name]["positions"].append([p.x, p.y, p.dancer.first_name, p.dancer.color])
+			if (p.dancer):
+				formation_json[f.name]["positions"].append([p.x, p.y, p.dancer.first_name, p.dancer.id , p.dancer.color])
+			else:
+				formation_json[f.name]["positions"].append([p.x, p.y, "", None, "white"])
 		
 	return JsonResponse(formation_json);	
 		

@@ -25,6 +25,9 @@
         height: 100%;
         z-index: -2;
         opacity: 0.4;
+      } 
+      input {
+        background-color: lightblue;
       }
       form {
         text-align: center;
@@ -32,6 +35,7 @@
       h1 {
         text-align: center;
         font-family: 'Optima';
+        margin-bottom: 20px;
       }
       button {
         margin-top: 10px;
@@ -49,16 +53,23 @@
         width: 55%;
         height: 60%;
         overflow-y: scroll;
-        
+        text-align: left;
+       
       }
 
     
       #roster {
-        font-family: Optima;
-        margin-bottom: 10px;
-        font-size: 20px;
+        
         display: inline-block;
-}
+
+        font-family: Optima;
+        margin: 10px 10px;
+        font-size: 20px;
+        
+        
+        
+       }
+ 
       hr {
         border: 0;
         height: 0;
