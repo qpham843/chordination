@@ -41,9 +41,11 @@ def roster_data(request):
 def formation_data(request):
 	if request.method == 'POST':
 		if (request.POST.get('action') == 'save'):					#save functionality
-			if (Formation.objects.get(name__iexact = request.POST.get('fname'))):
+			if (Formation.objects.filter(name__iexact = request.POST.get('fname')).exists()):
+				print("overwriting")
 				f = Formation.objects.get(name__iexact = request.POST.get('fname'))
 			else:	
+				print("new")
 				f = Formation()	
 			if (request.POST.get('fname')):
 				f.name = request.POST.get('fname')
@@ -60,7 +62,7 @@ def formation_data(request):
 				p.formation = f
 				p.save()
 		elif (request.POST.get('action') == 'delete'):   #delete functionality
-			if (request.POST.get('fname')):
+			if (request.POST.get('fname') and Formation.objects.get(name__iexact = request.POST.get('fname'))):
 				f = Formation.objects.get(name__iexact = request.POST.get('fname'))
 				f.delete()
 				
