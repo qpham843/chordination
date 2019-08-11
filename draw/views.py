@@ -40,8 +40,11 @@ def roster_data(request):
 
 def formation_data(request):
 	if request.method == 'POST':
-		if (request.POST.get('action') == 'save'):       #save functionality
-			f = Formation()
+		if (request.POST.get('action') == 'save'):					#save functionality
+			if (Formation.objects.get(name__iexact = request.POST.get('fname'))):
+				f = Formation.objects.get(name__iexact = request.POST.get('fname'))
+			else:	
+				f = Formation()	
 			if (request.POST.get('fname')):
 				f.name = request.POST.get('fname')
 			if (request.POST.get('notes')):
