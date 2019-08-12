@@ -103,6 +103,7 @@ $(document).ready(()=>{
       selectionMouseUp(event);
     }
     if (document.getElementById("colorCheckBox").selected) {
+      console.log("HI")
       colorMouseUp(event);
     }
     if (selectedCirc) {
