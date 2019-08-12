@@ -29,6 +29,19 @@ canvas {
   width: 10%;
 }
 
+#colorOptions {
+  position: absolute;
+  right: 2%;
+  top: 20%;
+  width: 10%;
+}
+
+#colorOptions > optgroup > option {
+  width: 80%;
+  margin: auto;
+  text-align: left;
+}
+
 #layerOptions {
   position: absolute;
   right: 2%;
