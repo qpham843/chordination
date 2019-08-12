@@ -17,19 +17,35 @@
 <body>
   <div id="canvases">
     <canvas id="myCanvas" resize="true"></canvas>
-    <select id="selectionOptions" multiple="multiple" style="overflow: auto">
+    <select id="selectionOptions" size="5" style="overflow: auto">
       <optgroup label="Modes">
-        <option selected="selected">Normal</option>
+        <option id="normalCheckBox" selected="selected">Normal</option>
         <option id="switchCheckBox">Switch</option>
         <option id="groupCheckBox">Selection</option>
+        
+        <option id="colorCheckBox">Color</option>
+        <option id="dancerAssignment" style="display: none">Assign</option>
       </optgroup>
     </select>
+    
+    <select id="colorOptions" size="5" style="overflow: auto; display: none">
+      <optgroup id="colorList" label="Colors">
+        <option id="color0" selected="selected" style="background-color: white">White</option>
+        <option id="color1"style="background-color: orangered">Red</option> 
+        <option id="color2" style="background-color: limegreen">Green</option> 
+        <option id="color3" style="background-color: deepskyblue">Blue</option> 
+      </optgroup>
+    </select>
+    
+    <!--
     <select id="layerOptions" multiple="multiple" size="3" style="overflow: auto">
       <optgroup id="layersOptgroup" label="Layers">
         <option id="newLayer">Add Layer</option>
         <option selected="selected" id="layer0">Layer 0</option>
       </optgroup>
     </select>
+    -->
+    
   </div>  
   <div class = "rightcolumn">
   <button id = "menu">

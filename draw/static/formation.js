@@ -35,15 +35,16 @@ $(document).ready(()=>{
   function loadRoster() {
     $.get("/draw/roster_data").done(function(data) {
       dancers = data;
-      createDancerList(data);
+      createDancerList(data, 0);
     })
   }
   
   function loadFormation(preset) {
-    $.get("/draw/formation_data").done(function(data) {
-      dancers = {};
+    $.get("/draw/formation_data").done(function(data) { /* Removing the reassignment of dancers, and replaced with modifying attributes.**/
+      //dancers = {};
       var tempList = data[preset].positions;
       $("#notes").val(data[preset].notes);
+      /*
       for (var i = 0; i < tempList.length; i ++) {
         var temp = tempList[i];
         var dancer = {};
@@ -54,12 +55,20 @@ $(document).ready(()=>{
         dancer.position.y = temp[1];
         dancers[i + 1] = dancer;
       }
+      */
+      for (var i = 1; i < Object.keys(dancers).length + 1; i ++) {
+        dancer = dancers[i];
+        var temp = tempList[i - 1];
+        dancer.color = temp[3];
+        dancer.position = {};
+        dancer.position.x = temp[0];
+        dancer.position.y = temp[1];
+      }
+      
       paper.project.activeLayer.removeChildren();
-      createDancerList(dancers);
+      createDancerList(dancers, 1);
     })
   }
-  
-  
   
   loadRoster();
   //loadFormation("Preset 1");
@@ -75,10 +84,10 @@ $(document).ready(()=>{
   
   var layerNumber = 0;
   
-  // MOUSE EVENTS
+  // MOUSE EVENTS    /* Changed tool elements to handle positive if statements, rather than negative **/
   
   tool.onMouseDown = function(event) {
-    if (!document.getElementById("switchCheckBox").selected && !document.getElementById("groupCheckBox").selected) {
+    if (document.getElementById("normalCheckBox").selected) {
       normalMouseDown(event);
     }
     if (document.getElementById("groupCheckBox").selected) {
@@ -89,17 +98,23 @@ $(document).ready(()=>{
   tool.onMouseUp = function(event) {
     if (document.getElementById("switchCheckBox").selected) {
       switchMouseUp(event);
-    } else if (document.getElementById("groupCheckBox").selected) {
+    }
+    if (document.getElementById("groupCheckBox").selected) {
       selectionMouseUp(event);
-    }  else if (selectedCirc) {
+    }
+    if (document.getElementById("colorCheckBox").selected) {
+      colorMouseUp(event);
+    }
+    if (selectedCirc) {
       deselect();
     }
   }
   
   tool.onMouseDrag = function(event) {
-    if (!document.getElementById("switchCheckBox").selected && !document.getElementById("groupCheckBox").selected && selectedCirc) {
+    if (document.getElementById("normalCheckBox").selected && selectedCirc) {
       selectedCirc.position = new paper.Point(gridPoint(event.point));
-    } else if (document.getElementById("groupCheckBox").selected) {
+    }
+    if (document.getElementById("groupCheckBox").selected) {
       selectionMouseDrag(event);
     }
   }
@@ -113,6 +128,7 @@ $(document).ready(()=>{
     $('.preset').toggle();
   });
   
+  /*
   document.getElementById("layerOptions").addEventListener('change', function() {
     if (document.getElementById("newLayer").selected) {
       layerNumber += 1;
@@ -131,16 +147,22 @@ $(document).ready(()=>{
     }
     checkLayers();
   });
+  */
   
-  document.getElementById("selectionOptions").addEventListener('change', function() {
+  document.getElementById("selectionOptions").addEventListener('change', function() { /* Added an event for the color check box. **/
     deselect();
+    if (document.getElementById("colorCheckBox").selected) {
+      document.getElementById("colorOptions").style.display = "block";
+    } else {
+      document.getElementById("colorOptions").style.display = "none";
+    }
   });
   
   
   // FUNCTIONS
-  function createDancerList(dancerList) {
+  function createDancerList(dancerList, isFormation) {
     for (var i in dancerList) {
-      var dancer = dancerList[i];
+     var dancer = dancerList[i];
      var x = 40;
       var y = -40 + 80*i;
       if (y + 50 > canvas.height) {
@@ -160,7 +182,9 @@ $(document).ready(()=>{
       circ.strokeColor = "black";
       circ.fillColor = color;
       circText = new paper.PointText(new paper.Point(x, y + 15));
-      circText.content = i;
+      if (!isFormation) {
+        circText.content = i;
+      }
       circText.fontSize = 40;
       circText.justification = 'center';
       
@@ -281,13 +305,29 @@ $(document).ready(()=>{
       namePopup = new paper.PointText(event.point);
       namePopup.point.x += 5;
       namePopup.point.y -= 5;
-      namePopup.content = " " + dancer.name + " ";
+      if (dancer.name) {
+        namePopup.content = " " + dancer.name + " "; /* Added the if condition so that we don't get as many errors. **/
+      }
       namePopup.fillColor = "white";
       namePopup.fontSize = 20;
       popupRect = new paper.Path.Rectangle(namePopup.bounds);
       popupRect.fillColor = 'black';
       popupRect.strokeColor = 'black';
       namePopup.insertAbove(popupRect);
+    }
+  }
+  
+  function colorMouseUp(event) {      /* The color mouse up event. **/
+    var circIndex = findCirc(event);
+    if (circIndex != -1) {
+      var circ = circArray[circIndex];
+      for (var i = 0; i < document.getElementById("colorList").children.length; i++) {
+        if (document.getElementById("color" + i).selected) {
+          console.log(circ.fillColor);
+          circ.fillColor = document.getElementById("color" + i).backgroundColor;
+          console.log(circ.fillColor);
+        }
+      }
     }
   }
   
