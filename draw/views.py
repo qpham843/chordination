@@ -34,7 +34,7 @@ def roster_data(request):
 	dancers = Dancer.objects.all();
 	dancers_json = {}
 	for d in dancers:
-		dancers_json[d.id] = {"name": d.first_name, "color": d.color}
+		dancers_json[d.id] = {"name": d.first_name}
 	
 	return JsonResponse(dancers_json);
 
@@ -44,6 +44,7 @@ def formation_data(request):
 			if (Formation.objects.filter(name__iexact = request.POST.get('fname')).exists()):
 				print("overwriting")
 				f = Formation.objects.get(name__iexact = request.POST.get('fname'))
+				Position.objects.filter(formation = f).delete()
 			else:	
 				print("new")
 				f = Formation()	
@@ -59,8 +60,10 @@ def formation_data(request):
 				p = Position()
 				p.x = pos[0]
 				p.y = pos[1]
+				p.color = pos[2]
 				p.formation = f
 				p.save()
+        
 		elif (request.POST.get('action') == 'delete'):   #delete functionality
 			if (request.POST.get('fname') and Formation.objects.get(name__iexact = request.POST.get('fname'))):
 				f = Formation.objects.get(name__iexact = request.POST.get('fname'))
@@ -73,9 +76,9 @@ def formation_data(request):
 		formation_json[f.name] = {"positions":[], "in_use":f.in_use, "notes": f.notes, "image":f.image}
 		for p in positions:
 			if (p.dancer):
-				formation_json[f.name]["positions"].append([p.x, p.y, p.dancer.first_name, p.dancer.id , p.dancer.color])
+				formation_json[f.name]["positions"].append([p.x, p.y, p.dancer.first_name, p.dancer.id , p.color])
 			else:
-				formation_json[f.name]["positions"].append([p.x, p.y, "", None, "white"])
+				formation_json[f.name]["positions"].append([p.x, p.y, "", None, p.color])
 		
 	return JsonResponse(formation_json);	
 		

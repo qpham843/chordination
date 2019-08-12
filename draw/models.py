@@ -4,7 +4,6 @@ from django.db import models
 
 class Dancer(models.Model):
     first_name = models.CharField("dancer's first name", max_length=30)
-    color = models.CharField(max_length=30, default="White")
     
     def __str__(self):
       return f"{self.id}. {self.first_name}"
@@ -22,6 +21,7 @@ class Position(models.Model):
     dancer = models.ForeignKey(Dancer, on_delete=models.SET_NULL, null=True, blank=True, related_name="position") #when dancer is deleted make this field null
     x = models.IntegerField("x-coordinate")
     y = models.IntegerField("y-coordinate")
+    color = models.CharField(max_length=30, default="White")
     
     def __str__(self):
-      return f"({self.x},{self.y}) in {self.formation.name}"    
+      return f"({self.x},{self.y}, {self.color}) in {self.formation.name}"    

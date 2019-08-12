@@ -59,12 +59,12 @@ $(document).ready(()=>{
       for (var i = 1; i < Object.keys(dancers).length + 1; i ++) {
         dancer = dancers[i];
         var temp = tempList[i - 1];
-        dancer.color = temp[3];
+        dancer.color = temp[4];
         dancer.position = {};
         dancer.position.x = temp[0];
         dancer.position.y = temp[1];
       }
-      
+      document.getElementById("dancerAssignment").style.display = "block";
       paper.project.activeLayer.removeChildren();
       createDancerList(dancers, 1);
     })
@@ -103,7 +103,6 @@ $(document).ready(()=>{
       selectionMouseUp(event);
     }
     if (document.getElementById("colorCheckBox").selected) {
-      console.log("HI")
       colorMouseUp(event);
     }
     if (selectedCirc) {
@@ -324,9 +323,7 @@ $(document).ready(()=>{
       var circ = circArray[circIndex];
       for (var i = 0; i < document.getElementById("colorList").children.length; i++) {
         if (document.getElementById("color" + i).selected) {
-          console.log(circ.fillColor);
-          circ.fillColor = document.getElementById("color" + i).backgroundColor;
-          console.log(circ.fillColor);
+          circ.children[0].fillColor = document.getElementById("color" + i).style.backgroundColor;
         }
       }
     }
@@ -376,7 +373,7 @@ $(document).ready(()=>{
     var length_circArray = circArray.length;
     var positions = [];
     for (var i = 1; i < length_circArray; i++){
-      positions.push([circArray[i].children[0].position.x, circArray[i].children[0].position.y]);
+      positions.push([circArray[i].children[0].position.x, circArray[i].children[0].position.y, circArray[i].children[0].fillColor.toCanvasStyle()]);
     }
     formation_data.positions = JSON.stringify(positions);
     console.log(formation_data);
