@@ -2,6 +2,9 @@ $(document).ready(()=>{
   $("#menu").on("click",function () {
       location.href = "/draw/menu/";
   });
+  $("#s-formations").on("click", function() { 
+      location.href = "/draw/saved_formations/";
+  });
 
   // INITIALIZATION
   var canvas = document.getElementById('myCanvas');
@@ -60,17 +63,7 @@ $(document).ready(()=>{
       // [x, y, name, id, color]
       $("#notes").val(data[preset].notes);
       
-      /*var tempList = data[preset].positions;
-      for (var i = 1; i < tempList.length + 1; i ++) {
-        dancer = dancers[i];
-        var temp = tempList[i - 1];
-        dancer.color = temp[4];
-        dancer.position = {};
-        dancer.position.x = temp[0];
-        dancer.position.y = temp[1];
-      }*/
       updateRoster();
-      
       var tempList = data[preset].positions;
       formationList = {};
       for (var i = 0; i < tempList.length; i++) {
@@ -84,8 +77,6 @@ $(document).ready(()=>{
         formationList[dancer_id].color = temp[4];
         console.log(formationList[dancer_id]);
       }
-      document.getElementById("dancerAssignment").style.display = "block";
-      document.getElementById("selectionOptions").size = 6;
       paper.project.activeLayer.removeChildren();
       
       circArray = [0];
@@ -106,6 +97,9 @@ $(document).ready(()=>{
   var selectionComplete = false;
   var selectionBox = null;
   var selectionGroup = null;
+ 
+  var namePopup = new paper.PointText(0,0);
+  var popupRect = new paper.Path.Rectangle(namePopup.bounds)
   
   // MOUSE EVENTS    /* Changed tool elements to handle positive if statements, rather than negative **/
   
@@ -132,6 +126,14 @@ $(document).ready(()=>{
     }
     if (document.getElementById("dancerAssignment").selected) {
       dancerAssignmentMouseUp(event);
+    }
+    if (document.getElementById("addCheckBox").selected) {
+      console.log("ADD");
+      addCircMouseUp(event);
+    }
+    if (document.getElementById("removeCheckBox").selected) {
+      console.log("REMOVE");
+      removeCircMouseUp(event);
     }
     if (!document.getElementById("groupCheckBox").selected && !document.getElementById("switchCheckBox").selected && selectedCirc) {
       deselect();
@@ -164,7 +166,6 @@ $(document).ready(()=>{
       document.getElementById("colorOptions").style.display = "none";
     }
     if (document.getElementById("dancerAssignment").selected) {
-      console.log("HI")
       document.getElementById("rosterAssignment").style.display = "block";
     } else {
       document.getElementById("rosterAssignment").style.display = "none";
@@ -276,28 +277,28 @@ $(document).ready(()=>{
     }
   }
   
-  var namePopup = new paper.PointText(0,0);
-  var popupRect = new paper.Path.Rectangle(namePopup.bounds)
-  
   function normalMouseMove(event) {
     var circIndex = findCirc(event);
     namePopup.remove();
     popupRect.remove();
     if (circIndex != -1) {
       var dancerIndex = circToDancer[circArray[circIndex]];
-      var dancer = dancers[dancerIndex];
-      namePopup = new paper.PointText(event.point);
-      namePopup.point.x += 5;
-      namePopup.point.y -= 5;
-      if (dancer.name) {
-        namePopup.content = " " + dancer.name + " "; /* Added the if condition so that we don't get as many errors. **/
+      if (dancerIndex) {
+        var dancer = dancers[dancerIndex];
+        namePopup = new paper.PointText(event.point);
+        namePopup.point.x += 5;
+        namePopup.point.y -= 5;
+        if (dancer.name) {
+          namePopup.content = " " + dancer.name + " "; /* Added the if condition so that we don't get as many errors. **/
+        }
+        namePopup.fillColor = "white";
+        namePopup.fontSize = 20;
+        popupRect = new paper.Path.Rectangle(namePopup.bounds);
+        popupRect.fillColor = 'black';
+        popupRect.strokeColor = 'black';
+        namePopup.insertAbove(popupRect);
       }
-      namePopup.fillColor = "white";
-      namePopup.fontSize = 20;
-      popupRect = new paper.Path.Rectangle(namePopup.bounds);
-      popupRect.fillColor = 'black';
-      popupRect.strokeColor = 'black';
-      namePopup.insertAbove(popupRect);
+      
     }
   }
   
@@ -324,6 +325,30 @@ $(document).ready(()=>{
           circ.children[1].justification = 'center';
         }
       }
+    }
+  }
+  
+  function addCircMouseUp(event) {
+    var circ = new paper.Path.Circle(event.point, 30);
+    console.log(circ);
+    circ.strokeColor = "black";
+    circ.fillColor = 'white';
+    var circText = new paper.PointText(event.point);
+    circ.position.y -= 15;
+    circText.content = "";
+    circText.fontSize = 40;
+    circText.justification = 'center';
+    var group = new paper.Group([circ, circText]);
+    circArray.push(group);
+  }
+  
+  function removeCircMouseUp(event) {
+    var circIndex = findCirc(event);
+    if (circIndex != -1) {
+      var circ = circArray[circIndex];
+      delete circToDancer[circ];
+      circ.remove();
+      circArray.splice(circIndex, 1);
     }
   }
   

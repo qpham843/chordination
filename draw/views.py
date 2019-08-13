@@ -82,6 +82,9 @@ def formation_data(request):
 				formation_json[f.name]["positions"].append([p.x, p.y, "", None, p.color])
 		
 	return JsonResponse(formation_json);	
+
+def saved_formations(request):
+	return render(request, "draw/saved_formations.html")
 		
 	
 	
