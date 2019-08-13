@@ -61,7 +61,8 @@ def formation_data(request):
 				p.x = pos[0]
 				p.y = pos[1]
 				p.color = pos[2]
-				p.dancer = Dancer.objects.get(first_name__iexact = pos[3])
+				if (Dancer.objects.filter(first_name__iexact = pos[3]).exists()):
+					p.dancer = Dancer.objects.get(first_name__iexact = pos[3])
 				p.formation = f
 				p.save()
         

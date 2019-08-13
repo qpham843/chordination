@@ -53,7 +53,7 @@
         width: 55%;
         height: 60%;
         overflow-y: scroll;
-        text-align: left;
+        text-align: center;
        
       }
 
@@ -64,8 +64,7 @@
 
         font-family: Optima;
         margin: 10px 10px;
-        font-size: 20px;
-        
+        font-size: 28px;
         
         
        }
@@ -80,3 +79,8 @@
       #menu {
         margin-left: 10px;
       }
+
+button {
+  padding-left: 5px;
+  padding-right: 5px;
+}

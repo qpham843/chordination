@@ -32,7 +32,6 @@
               No dancers in the roster.
             {% endfor %} -->
           </div>
-
         </div>
 
         <form action="" method="POST">
@@ -57,7 +56,7 @@
         function looping_through_roster(roster_json){
           $("#roster").empty();
           $.each(roster_json, function( id, name_color ) {
-            $("#roster").append(id + ". " + name_color["name"] + "<hr/> <br>");
+            $("#roster").append("<p style='margin-bottom: 10px'>" + id + ". " + name_color["name"] + "</p>");
           }); 
         }
         
