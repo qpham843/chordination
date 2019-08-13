@@ -66,16 +66,22 @@ $(document).ready(()=>{
       updateRoster();
       var tempList = data[preset].positions;
       formationList = {};
+      nullVal = -1;
       for (var i = 0; i < tempList.length; i++) {
         temp = tempList[i];
         var dancer_id = temp[3];
+        if (formationList[dancer_id]) {
+          dancer_id = nullVal;
+          nullVal -= 1;
+        }
         formationList[dancer_id] = {};
         formationList[dancer_id].position = {};
         formationList[dancer_id].position.x = temp[0];
         formationList[dancer_id].position.y = temp[1];
-        formationList[dancer_id].name = temp[2];
+        if (dancer_id > 0) {
+          formationList[dancer_id].name = temp[2];
+        }
         formationList[dancer_id].color = temp[4];
-        console.log(formationList[dancer_id]);
       }
       paper.project.activeLayer.removeChildren();
       
@@ -176,8 +182,8 @@ $(document).ready(()=>{
   // FUNCTIONS
   function createDancerList(dancerList) {
     for (var i in dancerList) {
-     var dancer = dancerList[i];
-     var x = 40;
+      var dancer = dancerList[i];
+      var x = 40;
       var y = -40 + 80*i;
       if (y + 50 > canvas.height) {
         x = 40 + 40*2*(Math.floor((y+50)/canvas.height));
@@ -196,12 +202,17 @@ $(document).ready(()=>{
       circ.strokeColor = "black";
       circ.fillColor = color;
       var circText = new paper.PointText(new paper.Point(x, y + 15));
-      circText.content = i;
+      if (i > 0) {
+        circText.content = i;
+      }
       circText.fontSize = 40;
+      circText.fontFamily = 'Arvo';
       circText.justification = 'center';
       
       var group = new paper.Group([circ, circText]);
-      circToDancer[group] = i;
+      if (i > 0) {
+        circToDancer[group] = i;
+      }
       circArray.push(group);
     }
   }
@@ -399,7 +410,11 @@ $(document).ready(()=>{
       var y = circArray[i].children[0].position.y;
       var color = circArray[i].children[0].fillColor.toCanvasStyle();
       var dancer_id = circToDancer[circArray[i]];
-      var dancer_firstName = dancers[dancer_id].name;
+      var dancer_firstName = "";
+      if (dancer_id) {
+        dancer_firstName = dancers[dancer_id].name;
+      }
+      
       positions.push([x, y, color, dancer_firstName]);
       /* End of QM's added code **/
       //positions.push([circArray[i].children[0].position.x, circArray[i].children[0].position.y, circArray[i].children[0].fillColor.toCanvasStyle()]);

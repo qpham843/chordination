@@ -26,14 +26,14 @@ canvas {
   position: absolute;
   right: 2%;
   top: 2%;
-  width: 10%;
+  width: 12%;
 }
 
 #colorOptions {
   position: absolute;
   right: 2%;
   top: 30%;
-  width: 10%;
+  width: 12%;
 }
 
 #colorOptions > optgroup > option {
@@ -46,19 +46,19 @@ canvas {
   position: absolute;
   right: 2%;
   top: 30%;
-  width: 10%;
+  width: 12%;
   text-align: left;
 }
 
 body {
   background-image: url('/static/draw/images/pastel.png');
-  font-family: 'Optima';
+  font-family: Avenir;
   text-align: center;
 }
 
 button {
   margin-top: 10px;
-  font-family: 'Optima';
+  font-family: Open Sans;
   border-radius: 10px;
   font-size: 20px;
   background-color: darkslateblue;
@@ -75,7 +75,7 @@ h3{
 }
 #formationOptions {
   font-size: 18px;
-  margin-top: 5px;
+  margin-top: 10px;
 }  
 #infoSection {
   font-size: 18px;
@@ -114,4 +114,8 @@ img {
   border: 1px solid black;
   width: 280px;
   height: 140px;
+}
+
+#options {
+  margin-top: 15px;
 }

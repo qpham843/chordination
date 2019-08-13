@@ -11,6 +11,8 @@
       <script type="text/javascript" src="{% static 'draw/vendor/paper/paper-full.min.js' %}"></script>
       <link href="https://fonts.googleapis.com/css?family=Sarina&display=swap" rel="stylesheet">
       <meta name="viewport" content="width=device-width, initial-scale=1">
+      <link href="https://fonts.googleapis.com/css?family=Cabin Sketch" rel='stylesheet'>
+      <link href="https://fonts.googleapis.com/css?family=Open Sans" rel='stylesheet'>
 
     <style type="text/css">
         body {
@@ -21,7 +23,7 @@
         h3 {
           text-align: center;
           font-weight: normal;
-          font-family: 'Sarina', cursive;
+          font-family: Cabin Sketch;
           font-size: 60px;
           margin-top: 20px;
           margin-bottom: 20px;
@@ -30,7 +32,7 @@
         button {
           margin: 20px auto;
           display: block;
-          font-family: 'Optima';
+          font-family: Open Sans;
           border-radius: 10px;
           font-size: 20px;
           background-color: darkslateblue;
@@ -75,7 +77,7 @@
     
     $.get("/draw/formation_data").done(function(formation_json) {
       $.each(formation_json, function(form_name, data ) {
-      $(".flex-container").append("<div> <img src=" + data.image + "> <h4>" + form_name + "<h4> </div>");
+      $(".flex-container").append("<div> <img src=" + data.image + "> <h4 style='font-family: Open Sans'>" + form_name + "<h4> </div>");
     }); 
   });
   </script>

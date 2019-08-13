@@ -12,6 +12,8 @@
     <script type="text/javascript" src="{% static 'draw/vendor/bootstrap/js/bootstrap.min.js' %}"></script>
     <script type="text/javascript" src="{% static 'draw/vendor/paper/paper-full.min.js' %}"></script>
     <script type="text/javascript" src="{% static 'formation.js' %}"> </script>
+    <link href="https://fonts.googleapis.com/css?family=Cabin Sketch" rel='stylesheet'>
+    <link href="https://fonts.googleapis.com/css?family=Open Sans" rel='stylesheet'>
 
 </head>
 <body>
@@ -19,9 +21,9 @@
     <canvas id="myCanvas" resize="true"></canvas>
     <select id="selectionOptions" size="9" style="overflow: auto">
       <optgroup label="Modes">
-        <option id="normalCheckBox" selected="selected">Normal</option>
+        <option id="normalCheckBox" selected="selected">Move</option>
         <option id="switchCheckBox">Switch</option>
-        <option id="groupCheckBox">Selection</option>
+        <option id="groupCheckBox">Group Move</option>
         <option id="colorCheckBox">Color</option>
       </optgroup>
       <optgroup label="Dancers">

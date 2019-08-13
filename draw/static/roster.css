@@ -62,12 +62,18 @@
         
         display: inline-block;
 
-        font-family: Optima;
+        font-family: Avenir;
         margin: 10px 10px;
         font-size: 28px;
         
         
        }
+      h1 {
+        font-family: Cabin Sketch;
+      }
+      button {
+        font-family: Open Sans;
+      }
  
       hr {
         border: 0;
