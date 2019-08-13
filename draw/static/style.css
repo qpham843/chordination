@@ -52,7 +52,7 @@ canvas {
 
 body {
   background-image: url('/static/draw/images/pastel.png');
-  font-family: Avenir;
+  font-family: Avenir, Nunito;
   text-align: center;
 }
 

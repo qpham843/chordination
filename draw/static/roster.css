@@ -34,12 +34,12 @@
       }
       h1 {
         text-align: center;
-        font-family: 'Optima';
+        font-family: 'Canvas Style';
         margin-bottom: 20px;
       }
       button {
         margin-top: 10px;
-        font-family: 'Optima';
+        font-family: 'Open Sans';
         border-radius: 10px;
         font-size: 20px;
         background-color: darkslateblue;
@@ -62,18 +62,12 @@
         
         display: inline-block;
 
-        font-family: Avenir;
+        font-family: Avenir, Nunito;
         margin: 10px 10px;
         font-size: 28px;
         
         
        }
-      h1 {
-        font-family: Cabin Sketch;
-      }
-      button {
-        font-family: Open Sans;
-      }
  
       hr {
         border: 0;
