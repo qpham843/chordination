@@ -23,7 +23,6 @@ $(document).ready(()=>{
   // load formation images from db
   formationPics();
   
- 
   var dancers = null;
   var circArray = [0]; 
   //Each entry in here is a Paper JS Group containing the Path (Circle) and Text (TextPosition). To get the position, just do circArray[i].position
@@ -35,38 +34,52 @@ $(document).ready(()=>{
   function loadRoster() {
     $.get("/draw/roster_data").done(function(data) {
       dancers = data;
-      createDancerList(data, 0);
+      createDancerList(dancers);
+    })
+  }
+  
+  function updateRoster() {
+    $.get("/draw/roster_data").done(function(data) {
+      dancers = data;
     })
   }
   
   function loadFormation(preset) {
     $.get("/draw/formation_data").done(function(data) { /* Removing the reassignment of dancers, and replaced with modifying attributes.**/
       //dancers = {};
-      var tempList = data[preset].positions;
+      // [x, y, name, id, color]
       $("#notes").val(data[preset].notes);
-      /*
-      for (var i = 0; i < tempList.length; i ++) {
-        var temp = tempList[i];
-        var dancer = {};
-        dancer.name = temp[2];
-        dancer.color = temp[3];
-        dancer.position = {};
-        dancer.position.x = temp[0];
-        dancer.position.y = temp[1];
-        dancers[i + 1] = dancer;
-      }
-      */
-      for (var i = 1; i < Object.keys(dancers).length + 1; i ++) {
+      
+      /*var tempList = data[preset].positions;
+      for (var i = 1; i < tempList.length + 1; i ++) {
         dancer = dancers[i];
         var temp = tempList[i - 1];
         dancer.color = temp[4];
         dancer.position = {};
         dancer.position.x = temp[0];
         dancer.position.y = temp[1];
+      }*/
+      updateRoster();
+      var tempList = data[preset].positions;
+      formationList = {};
+      for (var i = 0; i < tempList.length; i++) {
+        temp = tempList[i];
+        console.log(temp);
+        var dancer_id = temp[3];
+        formationList[dancer_id] = {};
+        formationList[dancer_id].position = {};
+        formationList[dancer_id].position.x = temp[0];
+        formationList[dancer_id].position.y = temp[1];
+        formationList[dancer_id].name = temp[2];
+        formationList[dancer_id].color = temp[4];
+        console.log(formationList[dancer_id]);
       }
       document.getElementById("dancerAssignment").style.display = "block";
+      document.getElementById("selectionOptions").size = 6;
+      console.log(formationList);
+      console.log(tempList);
       paper.project.activeLayer.removeChildren();
-      createDancerList(dancers, 1);
+      createDancerList(formationList);
     })
   }
   
@@ -81,8 +94,6 @@ $(document).ready(()=>{
   var selectionComplete = false;
   var selectionBox = null;
   var selectionGroup = null;
-  
-  var layerNumber = 0;
   
   // MOUSE EVENTS    /* Changed tool elements to handle positive if statements, rather than negative **/
   
@@ -105,7 +116,7 @@ $(document).ready(()=>{
     if (document.getElementById("colorCheckBox").selected) {
       colorMouseUp(event);
     }
-    if (selectedCirc) {
+    if (!document.getElementById("groupCheckBox").selected && !document.getElementById("switchCheckBox").selected && selectedCirc) {
       deselect();
     }
   }
@@ -128,27 +139,6 @@ $(document).ready(()=>{
     $('.preset').toggle();
   });
   
-  /*
-  document.getElementById("layerOptions").addEventListener('change', function() {
-    if (document.getElementById("newLayer").selected) {
-      layerNumber += 1;
-      this.size += 1;
-      var newLayerOption = document.createElement("option");
-      newLayerOption.id = "layer" + layerNumber;
-      newLayerOption.text = "Layer " + layerNumber;
-      document.getElementById("layersOptgroup").append(newLayerOption);
-      document.getElementById("newLayer").selected = false;
-      newLayerOption.selected = true;
-      
-      var newLayer = new paper.Layer();
-      paper.project.layers.push(newLayer);
-      newLayer.activate();
-      loadRoster();
-    }
-    checkLayers();
-  });
-  */
-  
   document.getElementById("selectionOptions").addEventListener('change', function() { /* Added an event for the color check box. **/
     deselect();
     if (document.getElementById("colorCheckBox").selected) {
@@ -160,7 +150,7 @@ $(document).ready(()=>{
   
   
   // FUNCTIONS
-  function createDancerList(dancerList, isFormation) {
+  function createDancerList(dancerList) {
     for (var i in dancerList) {
      var dancer = dancerList[i];
      var x = 40;
@@ -182,9 +172,7 @@ $(document).ready(()=>{
       circ.strokeColor = "black";
       circ.fillColor = color;
       circText = new paper.PointText(new paper.Point(x, y + 15));
-      if (!isFormation) {
-        circText.content = i;
-      }
+      circText.content = i;
       circText.fontSize = 40;
       circText.justification = 'center';
       
@@ -193,38 +181,11 @@ $(document).ready(()=>{
       circArray.push(group);
     }
   }
-    
-  function loadDancerList(dancers) {
-    for (var i = 0; i < dancers.length; i ++) {
-      var dancer = dancers[i];
-      var x = 40;
-      var y = 40 + 80*i;
-    }
-  }
-  
-  function checkLayers() {
-    var activated = 0;
-    for (var i=0; i < layerNumber + 1; i++) {
-      var layer = document.getElementById("layer" + i);
-      if (layer.selected) {
-        activated += 1;
-        paper.project.layers[i].activate();
-        paper.project.layers[i].visible = true;
-        paper.project.layers[i].opacity = 1/activated;
-      } else {
-        paper.project.layers[i].visible = false;
-        paper.project.layers[i].locked = true;
-      }
-    }
-  }
 
   
   function findCirc(event) {
     for (var i = 1; i < circArray.length + 1; i ++) {
       var circ = circArray[i];
-      /*if (!(paper.project.activeLayer.children.includes(circ))) {
-        continue;
-      }*/
       if (!circ) {
         continue;
       }
@@ -240,7 +201,6 @@ $(document).ready(()=>{
     var circIndex = findCirc(event);
     if (circIndex != -1) {
       select(circIndex);
-      circArray[circIndex].children[1].selected = false;
     }
   }
   
@@ -301,7 +261,8 @@ $(document).ready(()=>{
     namePopup.remove();
     popupRect.remove();
     if (circIndex != -1) {
-      var dancer = dancers[circIndex];
+      var dancerIndex = circToDancer[circArray[circIndex]];
+      var dancer = dancers[dancerIndex];
       namePopup = new paper.PointText(event.point);
       namePopup.point.x += 5;
       namePopup.point.y -= 5;
@@ -342,8 +303,6 @@ $(document).ready(()=>{
     }
     selectedCirc = null;
     selectedCircs = new Set();
-//     document.getElementById("Name").innerHTML = "Name: ";
-//     document.getElementById("Number").innerHTML = "Number: ";
   }
   
   function gridPoint(point) {
@@ -358,7 +317,7 @@ $(document).ready(()=>{
     for (var i = 1; i < circArray.length; i++) {
       var circ = circArray[i];
       var box = new paper.Rectangle(selectionStart, event.point);
-      if (circ.position.isInside(box) /*&& paper.project.activeLayer.children.includes(circ)*/) {
+      if (circ.position.isInside(box)) {
         select(i);
       }
     }
@@ -373,7 +332,15 @@ $(document).ready(()=>{
     var length_circArray = circArray.length;
     var positions = [];
     for (var i = 1; i < length_circArray; i++){
-      positions.push([circArray[i].children[0].position.x, circArray[i].children[0].position.y, circArray[i].children[0].fillColor.toCanvasStyle()]);
+      /* Start of QM's added code **/
+      var x = circArray[i].children[0].position.x;
+      var y = circArray[i].children[0].position.y;
+      var color = circArray[i].children[0].fillColor.toCanvasStyle();
+      var dancer_id = circToDancer[circArray[i]];
+      var dancer_firstName = dancers[dancer_id].name;
+      positions.push([x, y, color, dancer_firstName, dancer_id]);
+      /* End of QM's added code **/
+      //positions.push([circArray[i].children[0].position.x, circArray[i].children[0].position.y, circArray[i].children[0].fillColor.toCanvasStyle()]);
     }
     formation_data.positions = JSON.stringify(positions);
     console.log(formation_data);

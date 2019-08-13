@@ -60,7 +60,12 @@ def formation_data(request):
 				p = Position()
 				p.x = pos[0]
 				p.y = pos[1]
-				p.color = pos[2]
+				p.color = pos[2] 
+				# Start of QM's Added Code
+				p.dancer = Dancer()
+				p.dancer.first_name = pos[3]
+				p.dancer.id = pos[4] 
+				# End of QM's Added Code
 				p.formation = f
 				p.save()
         
