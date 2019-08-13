@@ -41,6 +41,11 @@ $(document).ready(()=>{
   function updateRoster() {
     $.get("/draw/roster_data").done(function(data) {
       dancers = data;
+      var roster = "";
+      for (var index in dancers) {
+        roster += "<option id='dancer" + parseInt(index) + "'>" + dancers[index].name + "</option>";
+      }
+      document.getElementById("rosterList").innerHTML = roster;
     })
   }
   
@@ -60,11 +65,11 @@ $(document).ready(()=>{
         dancer.position.y = temp[1];
       }*/
       updateRoster();
+      
       var tempList = data[preset].positions;
       formationList = {};
       for (var i = 0; i < tempList.length; i++) {
         temp = tempList[i];
-        console.log(temp);
         var dancer_id = temp[3];
         formationList[dancer_id] = {};
         formationList[dancer_id].position = {};
@@ -76,9 +81,11 @@ $(document).ready(()=>{
       }
       document.getElementById("dancerAssignment").style.display = "block";
       document.getElementById("selectionOptions").size = 6;
-      console.log(formationList);
-      console.log(tempList);
       paper.project.activeLayer.removeChildren();
+      
+      circArray = [0];
+      circToDancer = {};
+      
       createDancerList(formationList);
     })
   }
@@ -116,6 +123,9 @@ $(document).ready(()=>{
     if (document.getElementById("colorCheckBox").selected) {
       colorMouseUp(event);
     }
+    if (document.getElementById("dancerAssignment").selected) {
+      dancerAssignmentMouseUp(event);
+    }
     if (!document.getElementById("groupCheckBox").selected && !document.getElementById("switchCheckBox").selected && selectedCirc) {
       deselect();
     }
@@ -146,6 +156,12 @@ $(document).ready(()=>{
     } else {
       document.getElementById("colorOptions").style.display = "none";
     }
+    if (document.getElementById("dancerAssignment").selected) {
+      console.log("HI")
+      document.getElementById("rosterAssignment").style.display = "block";
+    } else {
+      document.getElementById("rosterAssignment").style.display = "none";
+    }
   });
   
   
@@ -171,7 +187,7 @@ $(document).ready(()=>{
       }
       circ.strokeColor = "black";
       circ.fillColor = color;
-      circText = new paper.PointText(new paper.Point(x, y + 15));
+      var circText = new paper.PointText(new paper.Point(x, y + 15));
       circText.content = i;
       circText.fontSize = 40;
       circText.justification = 'center';
@@ -290,6 +306,20 @@ $(document).ready(()=>{
     }
   }
   
+  function dancerAssignmentMouseUp(event) {   /* The dancer assignment mouse up event. **/
+    var circIndex = findCirc(event);
+    if (circIndex != -1) {
+      var circ = circArray[circIndex];
+      for (var index in dancers) {
+        if (document.getElementById("dancer" + index).selected) {
+          circToDancer[circIndex] = index;
+          circ.children[1].content = index;
+          circ.children[1].justification = 'center';
+        }
+      }
+    }
+  }
+  
   function select(circIndex) {
     selectedCirc = circArray[circIndex];
     selectedCirc.selected = true;
@@ -338,7 +368,7 @@ $(document).ready(()=>{
       var color = circArray[i].children[0].fillColor.toCanvasStyle();
       var dancer_id = circToDancer[circArray[i]];
       var dancer_firstName = dancers[dancer_id].name;
-      positions.push([x, y, color, dancer_firstName, dancer_id]);
+      positions.push([x, y, color, dancer_firstName]);
       /* End of QM's added code **/
       //positions.push([circArray[i].children[0].position.x, circArray[i].children[0].position.y, circArray[i].children[0].fillColor.toCanvasStyle()]);
     }

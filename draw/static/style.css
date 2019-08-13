@@ -42,12 +42,13 @@ canvas {
   text-align: left;
 }
 
-#layerOptions {
+#rosterAssignment {
   position: absolute;
   right: 2%;
-  top: 15%;
+  top: 20%;
   width: 10%;
 }
+
 body {
   background-image: url('/static/draw/images/pastel.png');
   font-family: 'Optima';
