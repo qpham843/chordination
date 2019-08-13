@@ -32,7 +32,7 @@ canvas {
 #colorOptions {
   position: absolute;
   right: 2%;
-  top: 20%;
+  top: 30%;
   width: 10%;
 }
 
@@ -45,8 +45,9 @@ canvas {
 #rosterAssignment {
   position: absolute;
   right: 2%;
-  top: 20%;
+  top: 30%;
   width: 10%;
+  text-align: left;
 }
 
 body {

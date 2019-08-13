@@ -17,14 +17,17 @@
 <body>
   <div id="canvases">
     <canvas id="myCanvas" resize="true"></canvas>
-    <select id="selectionOptions" size="5" style="overflow: auto">
+    <select id="selectionOptions" size="9" style="overflow: auto">
       <optgroup label="Modes">
         <option id="normalCheckBox" selected="selected">Normal</option>
         <option id="switchCheckBox">Switch</option>
         <option id="groupCheckBox">Selection</option>
-        
         <option id="colorCheckBox">Color</option>
-        <option id="dancerAssignment" style="display: none">Assign</option>
+      </optgroup>
+      <optgroup label="Dancers">
+        <option id="addCheckBox">Add</option>
+        <option id="removeCheckBox">Remove</option>
+        <option id="dancerAssignment">Assign</option>
       </optgroup>
     </select>
     

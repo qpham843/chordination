@@ -34,6 +34,11 @@ $(document).ready(()=>{
   function loadRoster() {
     $.get("/draw/roster_data").done(function(data) {
       dancers = data;
+      var roster = "";
+      for (var index in dancers) {
+        roster += "<option id='dancer" + parseInt(index) + "'>" + parseInt(index) + ". " + dancers[index].name + "</option>";
+      }
+      document.getElementById("rosterList").innerHTML = roster;
       createDancerList(dancers);
     })
   }
@@ -43,7 +48,7 @@ $(document).ready(()=>{
       dancers = data;
       var roster = "";
       for (var index in dancers) {
-        roster += "<option id='dancer" + parseInt(index) + "'>" + dancers[index].name + "</option>";
+        roster += "<option id='dancer" + parseInt(index) + "'>" + parseInt(index) + ". " + dancers[index].name + "</option>";
       }
       document.getElementById("rosterList").innerHTML = roster;
     })
@@ -105,6 +110,8 @@ $(document).ready(()=>{
   // MOUSE EVENTS    /* Changed tool elements to handle positive if statements, rather than negative **/
   
   tool.onMouseDown = function(event) {
+    namePopup.remove();
+    popupRect.remove();
     if (document.getElementById("normalCheckBox").selected) {
       normalMouseDown(event);
     }
@@ -312,7 +319,7 @@ $(document).ready(()=>{
       var circ = circArray[circIndex];
       for (var index in dancers) {
         if (document.getElementById("dancer" + index).selected) {
-          circToDancer[circIndex] = index;
+          circToDancer[circ] = index;
           circ.children[1].content = index;
           circ.children[1].justification = 'center';
         }
