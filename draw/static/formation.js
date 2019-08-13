@@ -206,7 +206,7 @@ $(document).ready(()=>{
         circText.content = i;
       }
       circText.fontSize = 40;
-      circText.fontFamily = 'Arvo';
+      circText.fontFamily = 'Avenir';
       circText.justification = 'center';
       
       var group = new paper.Group([circ, circText]);
@@ -304,6 +304,7 @@ $(document).ready(()=>{
         }
         namePopup.fillColor = "white";
         namePopup.fontSize = 20;
+        namePopup.fontFamily = 'Avenir';
         popupRect = new paper.Path.Rectangle(namePopup.bounds);
         popupRect.fillColor = 'black';
         popupRect.strokeColor = 'black';
