@@ -31,6 +31,7 @@ $(document).ready(()=>{
   //Each entry in here is a Paper JS Group containing the Path (Circle) and Text (TextPosition). To get the position, just do circArray[i].position
   // [Group, Group, Group, ...]
   var circToDancer = {};
+  var grid = new paper.Group([]);
   //Each entry in here is a key value pair. The key is the group from circArray, and the value is the index of that dancer in the data. 
   // {{Group: 1}, {Group: 2}, ...}
   
@@ -177,6 +178,21 @@ $(document).ready(()=>{
       document.getElementById("rosterAssignment").style.display = "none";
     }
   });
+  
+  document.getElementById("gridCheckBox").addEventListener('change', function() {
+    if (document.getElementById("gridStep").value < 5) {
+      console.log("Too small");
+      this.checked = false;
+    }
+    if (this.checked) {
+      console.log("I'm calling");
+      var gridStep = parseInt(document.getElementById("gridStep").value);
+      drawGridLines(gridStep, canvas);
+    } else {
+      console.log("I'm removing.")
+      grid.removeChildren();
+    }
+  })
   
   
   // FUNCTIONS
@@ -395,6 +411,32 @@ $(document).ready(()=>{
         select(i);
       }
     }
+  }
+  
+  function drawGridLines(stepSize, boundingRect) {
+    var x = 0;
+    console.log(boundingRect.height);
+    console.log(boundingRect.width);
+    while (x < boundingRect.width) {
+      x += stepSize;
+      var topPoint = new paper.Point(x, 0);
+      var botPoint = new paper.Point(x, boundingRect.height);
+      var vline = new paper.Path.Line(topPoint, botPoint);
+      vline.strokeColor = 'black';
+      grid.addChild(vline);
+    }
+    console.log(x);
+    var y = 0;
+    while (y < boundingRect.height) {
+      y += stepSize;
+      var leftPoint = new paper.Point(0, y);
+      var rightPoint = new paper.Point(boundingRect.width, y);
+      var hline = new paper.Path.Line(leftPoint, rightPoint);
+      hline.strokeColor = 'black';
+      grid.addChild(hline);
+    }
+    console.log(y);
+    console.log(grid.children);
   }
   
   
