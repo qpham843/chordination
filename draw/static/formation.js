@@ -88,7 +88,7 @@ $(document).ready(()=>{
       
       circArray = [0];
       circToDancer = {};
-      
+      grid = new paper.Group([]);
       createDancerList(formationList);
     })
   }
@@ -135,11 +135,9 @@ $(document).ready(()=>{
       dancerAssignmentMouseUp(event);
     }
     if (document.getElementById("addCheckBox").selected) {
-      console.log("ADD");
       addCircMouseUp(event);
     }
     if (document.getElementById("removeCheckBox").selected) {
-      console.log("REMOVE");
       removeCircMouseUp(event);
     }
     if (!document.getElementById("groupCheckBox").selected && !document.getElementById("switchCheckBox").selected && selectedCirc) {
@@ -181,15 +179,12 @@ $(document).ready(()=>{
   
   document.getElementById("gridCheckBox").addEventListener('change', function() {
     if (document.getElementById("gridStep").value < 5) {
-      console.log("Too small");
       this.checked = false;
     }
     if (this.checked) {
-      console.log("I'm calling");
       var gridStep = parseInt(document.getElementById("gridStep").value);
-      drawGridLines(gridStep, canvas);
+      drawGridLines(gridStep);
     } else {
-      console.log("I'm removing.")
       grid.removeChildren();
     }
   })
@@ -358,7 +353,6 @@ $(document).ready(()=>{
   
   function addCircMouseUp(event) {
     var circ = new paper.Path.Circle(event.point, 30);
-    console.log(circ);
     circ.strokeColor = "black";
     circ.fillColor = 'white';
     var circText = new paper.PointText(event.point);
@@ -413,30 +407,25 @@ $(document).ready(()=>{
     }
   }
   
-  function drawGridLines(stepSize, boundingRect) {
+  function drawGridLines(stepSize) {
     var x = 0;
-    console.log(boundingRect.height);
-    console.log(boundingRect.width);
-    while (x < boundingRect.width) {
+    while (x < canvas.width) {
       x += stepSize;
       var topPoint = new paper.Point(x, 0);
-      var botPoint = new paper.Point(x, boundingRect.height);
+      var botPoint = new paper.Point(x, canvas.height);
       var vline = new paper.Path.Line(topPoint, botPoint);
       vline.strokeColor = 'black';
       grid.addChild(vline);
     }
-    console.log(x);
     var y = 0;
-    while (y < boundingRect.height) {
+    while (y < canvas.height) {
       y += stepSize;
       var leftPoint = new paper.Point(0, y);
-      var rightPoint = new paper.Point(boundingRect.width, y);
+      var rightPoint = new paper.Point(canvas.width, y);
       var hline = new paper.Path.Line(leftPoint, rightPoint);
       hline.strokeColor = 'black';
       grid.addChild(hline);
     }
-    console.log(y);
-    console.log(grid.children);
   }
   
   
